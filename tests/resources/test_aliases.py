@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import httpx
 
 from tests.conftest import (
@@ -64,8 +66,53 @@ def test_update_alias() -> None:
         return json_response(updated)
 
     client = make_client("https://test.com", "key", handler)
-    alias = client.aliases.update(SAMPLE_ALIAS["id"], "info")
+    alias = client.aliases.update(SAMPLE_ALIAS["id"], alias="info")
     assert alias.alias == "info"
+    client.close()
+
+
+def test_create_alias_with_signature() -> None:
+    alias_with_sig = {
+        **SAMPLE_ALIAS,
+        "signature_html": "<p>Best regards</p>",
+        "signature_text": "Best regards",
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "POST"
+        body = json.loads(request.content)
+        assert body["signature_html"] == "<p>Best regards</p>"
+        return json_response(alias_with_sig)
+
+    client = make_client("https://test.com", "key", handler)
+    alias = client.aliases.create(
+        SAMPLE_ALIAS["domain_id"],
+        "support",
+        signature_html="<p>Best regards</p>",
+    )
+    assert alias.signature_html == "<p>Best regards</p>"
+    client.close()
+
+
+def test_update_alias_with_signature() -> None:
+    updated = {
+        **SAMPLE_ALIAS,
+        "signature_html": "<p>Cheers</p>",
+        "signature_text": "Cheers",
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "PUT"
+        body = json.loads(request.content)
+        assert body["signature_html"] == "<p>Cheers</p>"
+        return json_response(updated)
+
+    client = make_client("https://test.com", "key", handler)
+    alias = client.aliases.update(
+        SAMPLE_ALIAS["id"],
+        signature_html="<p>Cheers</p>",
+    )
+    assert alias.signature_html == "<p>Cheers</p>"
     client.close()
 
 

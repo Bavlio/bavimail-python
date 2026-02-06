@@ -21,6 +21,8 @@ class Alias:
     user_id: str
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    signature_html: str | None = None
+    signature_text: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Alias:
@@ -33,4 +35,6 @@ class Alias:
             user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),
             updated_at=_parse_datetime(data.get("updated_at")),
+            signature_html=data.get("signature_html"),
+            signature_text=data.get("signature_text"),
         )

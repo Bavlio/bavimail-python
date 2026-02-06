@@ -63,7 +63,7 @@ def test_update_tag() -> None:
     updated = {**SAMPLE_TAG, "name": "critical"}
 
     def handler(request: httpx.Request) -> httpx.Response:
-        assert request.method == "PATCH"
+        assert request.method == "PUT"
         body = request.content.decode()
         assert "critical" in body
         return json_response(updated)

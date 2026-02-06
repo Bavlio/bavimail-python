@@ -13,18 +13,20 @@ from ._base import _parse_datetime
 class AttachmentMetadata:
     """Metadata for an email attachment (no content)."""
 
-    filename: str
-    size_bytes: int
-    mime_type: str
+    filename: str | None = None
+    size_bytes: int = 0
+    mime_type: str = ""
     content_id: str | None = None
+    is_inline: bool = False
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> AttachmentMetadata:
         return cls(
-            filename=data["filename"],
+            filename=data.get("filename"),
             size_bytes=data["size_bytes"],
             mime_type=data["mime_type"],
             content_id=data.get("content_id"),
+            is_inline=data.get("is_inline", False),
         )
 
 
@@ -91,6 +93,15 @@ class Email:
     open_count: int = 0
     alias_name: str | None = None
     domain_name: str | None = None
+    send_at: datetime | None = None
+    send_at_timezone: str | None = None
+    send_at_utc: datetime | None = None
+    cancelled_at: datetime | None = None
+    track_clicks: bool = False
+    click_count: int = 0
+    first_clicked_at: datetime | None = None
+    last_clicked_at: datetime | None = None
+    tracked_links_count: int = 0
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Email:
@@ -131,4 +142,148 @@ class Email:
             open_count=data.get("open_count", 0),
             alias_name=data.get("alias_name"),
             domain_name=data.get("domain_name"),
+            send_at=_parse_datetime(data.get("send_at")),
+            send_at_timezone=data.get("send_at_timezone"),
+            send_at_utc=_parse_datetime(data.get("send_at_utc")),
+            cancelled_at=_parse_datetime(data.get("cancelled_at")),
+            track_clicks=data.get("track_clicks", False),
+            click_count=data.get("click_count", 0),
+            first_clicked_at=_parse_datetime(data.get("first_clicked_at")),
+            last_clicked_at=_parse_datetime(data.get("last_clicked_at")),
+            tracked_links_count=data.get("tracked_links_count", 0),
+        )
+
+
+@dataclass(frozen=True)
+class EmailClick:
+    """A click event on a tracked link in an email."""
+
+    id: str
+    link_id: str
+    original_url: str
+    position: int
+    clicked_at: datetime
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    user_agent: str | None = None
+    ip_address: str | None = None
+    referer: str | None = None
+    device_type: str | None = None
+    browser_name: str | None = None
+    os_name: str | None = None
+    is_first_click: bool = False
+    is_bot: bool = False
+    bot_reason: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EmailClick:
+        return cls(
+            id=str(data["id"]),
+            link_id=str(data["link_id"]),
+            original_url=data["original_url"],
+            position=data["position"],
+            clicked_at=_parse_datetime(data["clicked_at"]),  # type: ignore[arg-type]
+            created_at=_parse_datetime(data.get("created_at")),
+            updated_at=_parse_datetime(data.get("updated_at")),
+            user_agent=data.get("user_agent"),
+            ip_address=data.get("ip_address"),
+            referer=data.get("referer"),
+            device_type=data.get("device_type"),
+            browser_name=data.get("browser_name"),
+            os_name=data.get("os_name"),
+            is_first_click=data.get("is_first_click", False),
+            is_bot=data.get("is_bot", False),
+            bot_reason=data.get("bot_reason"),
+        )
+
+
+@dataclass(frozen=True)
+class TrackedLink:
+    """A tracked link in an email."""
+
+    id: str
+    link_id: str
+    original_url: str
+    position: int
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    anchor_text: str | None = None
+    click_count: int = 0
+    unique_click_count: int = 0
+    first_clicked_at: datetime | None = None
+    last_clicked_at: datetime | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> TrackedLink:
+        return cls(
+            id=str(data["id"]),
+            link_id=str(data["link_id"]),
+            original_url=data["original_url"],
+            position=data["position"],
+            created_at=_parse_datetime(data.get("created_at")),
+            updated_at=_parse_datetime(data.get("updated_at")),
+            anchor_text=data.get("anchor_text"),
+            click_count=data.get("click_count", 0),
+            unique_click_count=data.get("unique_click_count", 0),
+            first_clicked_at=_parse_datetime(data.get("first_clicked_at")),
+            last_clicked_at=_parse_datetime(data.get("last_clicked_at")),
+        )
+
+
+@dataclass(frozen=True)
+class BatchEmailItemError:
+    """Error details for a failed item in a batch send."""
+
+    message: str
+    code: str | None = None
+    category: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> BatchEmailItemError:
+        return cls(
+            message=data["message"],
+            code=data.get("code"),
+            category=data.get("category"),
+        )
+
+
+@dataclass(frozen=True)
+class BatchEmailItemResult:
+    """Result for a single item in a batch send."""
+
+    index: int
+    status: str
+    email: Email | None = None
+    error: BatchEmailItemError | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> BatchEmailItemResult:
+        email_data = data.get("email")
+        error_data = data.get("error")
+        return cls(
+            index=data["index"],
+            status=data["status"],
+            email=Email.from_dict(email_data) if email_data else None,
+            error=BatchEmailItemError.from_dict(error_data) if error_data else None,
+        )
+
+
+@dataclass(frozen=True)
+class BatchEmailResponse:
+    """Response from a batch email send."""
+
+    total: int
+    accepted: int
+    rejected: int
+    results: list[BatchEmailItemResult] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> BatchEmailResponse:
+        return cls(
+            total=data["total"],
+            accepted=data["accepted"],
+            rejected=data["rejected"],
+            results=[
+                BatchEmailItemResult.from_dict(r) for r in data.get("results", [])
+            ],
         )

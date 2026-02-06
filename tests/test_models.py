@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 from bavimail.models.alias import Alias
+from bavimail.models.email import (
+    AttachmentMetadata,
+    BatchEmailItemError,
+    BatchEmailItemResult,
+    BatchEmailResponse,
+    EmailClick,
+    TrackedLink,
+)
 from bavimail.models.conversation import ConversationDetail, ConversationSummary
 from bavimail.models.domain import (
     DNSRecord,
@@ -352,3 +360,199 @@ def test_datetime_parsing_with_offset() -> None:
     }
     domain = Domain.from_dict(data)
     assert domain.verified_at is not None
+
+
+def test_email_from_dict_with_click_tracking_fields() -> None:
+    data = {
+        "id": "e1",
+        "alias_id": "a1",
+        "domain_id": "d1",
+        "from_email": "support@example.com",
+        "to_email": "user@test.com",
+        "subject": "Test",
+        "body_text": "Hello",
+        "status": "sent",
+        "provider_message_id": "msg-1",
+        "user_id": "u1",
+        "track_clicks": True,
+        "click_count": 5,
+        "first_clicked_at": "2025-01-02T00:00:00Z",
+        "last_clicked_at": "2025-01-03T00:00:00Z",
+        "tracked_links_count": 2,
+    }
+    email = Email.from_dict(data)
+    assert email.track_clicks is True
+    assert email.click_count == 5
+    assert email.first_clicked_at is not None
+    assert email.last_clicked_at is not None
+    assert email.tracked_links_count == 2
+
+
+def test_email_from_dict_with_scheduling_fields() -> None:
+    data = {
+        "id": "e1",
+        "alias_id": "a1",
+        "domain_id": "d1",
+        "from_email": "support@example.com",
+        "to_email": "user@test.com",
+        "subject": "Test",
+        "body_text": "Hello",
+        "status": "queued",
+        "provider_message_id": "msg-1",
+        "user_id": "u1",
+        "send_at": "2025-02-01T10:00:00Z",
+        "send_at_timezone": "America/New_York",
+        "send_at_utc": "2025-02-01T15:00:00Z",
+        "cancelled_at": None,
+    }
+    email = Email.from_dict(data)
+    assert email.send_at is not None
+    assert email.send_at_timezone == "America/New_York"
+    assert email.send_at_utc is not None
+    assert email.cancelled_at is None
+
+
+def test_attachment_metadata_nullable_filename() -> None:
+    data = {
+        "filename": None,
+        "size_bytes": 512,
+        "mime_type": "application/octet-stream",
+        "is_inline": True,
+    }
+    att = AttachmentMetadata.from_dict(data)
+    assert att.filename is None
+    assert att.is_inline is True
+    assert att.size_bytes == 512
+
+
+def test_email_click_from_dict() -> None:
+    data = {
+        "id": "clk-1",
+        "link_id": "lnk-1",
+        "original_url": "https://example.com",
+        "position": 0,
+        "clicked_at": "2025-01-02T10:00:00Z",
+        "created_at": "2025-01-02T10:00:00Z",
+        "user_agent": "Mozilla/5.0",
+        "ip_address": "192.168.1.1",
+        "device_type": "desktop",
+        "browser_name": "Chrome",
+        "os_name": "Windows",
+        "is_first_click": True,
+        "is_bot": False,
+    }
+    click = EmailClick.from_dict(data)
+    assert click.id == "clk-1"
+    assert click.original_url == "https://example.com"
+    assert click.clicked_at is not None
+    assert click.is_first_click is True
+    assert click.is_bot is False
+    assert click.browser_name == "Chrome"
+
+
+def test_tracked_link_from_dict() -> None:
+    data = {
+        "id": "tl-1",
+        "link_id": "lnk-1",
+        "original_url": "https://example.com",
+        "position": 0,
+        "anchor_text": "Click here",
+        "click_count": 5,
+        "unique_click_count": 3,
+        "first_clicked_at": "2025-01-02T10:00:00Z",
+        "last_clicked_at": "2025-01-03T14:00:00Z",
+    }
+    link = TrackedLink.from_dict(data)
+    assert link.id == "tl-1"
+    assert link.anchor_text == "Click here"
+    assert link.click_count == 5
+    assert link.unique_click_count == 3
+    assert link.first_clicked_at is not None
+
+
+def test_batch_email_item_error_from_dict() -> None:
+    data = {"message": "Invalid recipient", "code": "INVALID_RECIPIENT", "category": "validation"}
+    err = BatchEmailItemError.from_dict(data)
+    assert err.message == "Invalid recipient"
+    assert err.code == "INVALID_RECIPIENT"
+    assert err.category == "validation"
+
+
+def test_batch_email_item_result_from_dict() -> None:
+    data = {
+        "index": 0,
+        "status": "accepted",
+        "email": {
+            "id": "e1",
+            "alias_id": "a1",
+            "domain_id": "d1",
+            "from_email": "support@example.com",
+            "to_email": "user@test.com",
+            "subject": "Test",
+            "body_text": "Hello",
+            "status": "queued",
+            "provider_message_id": "msg-1",
+            "user_id": "u1",
+        },
+    }
+    result = BatchEmailItemResult.from_dict(data)
+    assert result.index == 0
+    assert result.status == "accepted"
+    assert result.email is not None
+    assert result.email.id == "e1"
+    assert result.error is None
+
+
+def test_batch_email_response_from_dict() -> None:
+    data = {
+        "total": 2,
+        "accepted": 1,
+        "rejected": 1,
+        "results": [
+            {
+                "index": 0,
+                "status": "accepted",
+                "email": {
+                    "id": "e1",
+                    "alias_id": "a1",
+                    "domain_id": "d1",
+                    "from_email": "support@example.com",
+                    "to_email": "user@test.com",
+                    "subject": "Test",
+                    "body_text": "Hello",
+                    "status": "queued",
+                    "provider_message_id": "msg-1",
+                    "user_id": "u1",
+                },
+            },
+            {
+                "index": 1,
+                "status": "rejected",
+                "error": {"message": "Invalid recipient"},
+            },
+        ],
+    }
+    resp = BatchEmailResponse.from_dict(data)
+    assert resp.total == 2
+    assert resp.accepted == 1
+    assert resp.rejected == 1
+    assert len(resp.results) == 2
+    assert resp.results[0].email is not None
+    assert resp.results[1].error is not None
+    assert resp.results[1].error.message == "Invalid recipient"
+
+
+def test_alias_from_dict_with_signature() -> None:
+    data = {
+        "id": "a1",
+        "domain_id": "d1",
+        "alias": "support",
+        "full_email": "support@example.com",
+        "domain_name": "example.com",
+        "user_id": "u1",
+        "signature_html": "<p>Best regards</p>",
+        "signature_text": "Best regards",
+    }
+    alias = Alias.from_dict(data)
+    assert alias.signature_html == "<p>Best regards</p>"
+    assert alias.signature_text == "Best regards"

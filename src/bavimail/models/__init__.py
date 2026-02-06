@@ -15,7 +15,15 @@ from .domain import (
     DomainSetup,
     MailFromStatusInfo,
 )
-from .email import AttachmentMetadata, Email
+from .email import (
+    AttachmentMetadata,
+    BatchEmailItemError,
+    BatchEmailItemResult,
+    BatchEmailResponse,
+    Email,
+    EmailClick,
+    TrackedLink,
+)
 from .inbound_email import (
     InboundAttachmentMetadata,
     InboundEmailDetail,
@@ -28,6 +36,9 @@ from .webhook import Webhook, WebhookCreated, WebhookSecret
 __all__ = [
     "Alias",
     "AttachmentMetadata",
+    "BatchEmailItemError",
+    "BatchEmailItemResult",
+    "BatchEmailResponse",
     "ConversationDetail",
     "ConversationMessage",
     "ConversationSummary",
@@ -38,6 +49,7 @@ __all__ = [
     "Domain",
     "DomainSetup",
     "Email",
+    "EmailClick",
     "EmailTag",
     "InboundAttachmentMetadata",
     "InboundEmailDetail",
@@ -45,6 +57,7 @@ __all__ = [
     "MailFromStatusInfo",
     "Tag",
     "TagSummary",
+    "TrackedLink",
     "Verdict",
     "Webhook",
     "WebhookCreated",

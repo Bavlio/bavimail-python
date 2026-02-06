@@ -94,6 +94,73 @@ SAMPLE_EMAIL: dict[str, Any] = {
     "track_opens": True,
     "open_count": 0,
     "attachment_count": 0,
+    "track_clicks": False,
+    "click_count": 0,
+    "tracked_links_count": 0,
+}
+
+SAMPLE_EMAIL_CLICK: dict[str, Any] = {
+    "id": "clk-0000-0000-0000-000000000001",
+    "link_id": "lnk-0000-0000-0000-000000000001",
+    "original_url": "https://example.com/page",
+    "position": 0,
+    "clicked_at": "2025-01-02T10:00:00Z",
+    "created_at": "2025-01-02T10:00:00Z",
+    "updated_at": "2025-01-02T10:00:00Z",
+    "user_agent": "Mozilla/5.0",
+    "ip_address": "192.168.1.1",
+    "device_type": "desktop",
+    "browser_name": "Chrome",
+    "os_name": "Windows",
+    "is_first_click": True,
+    "is_bot": False,
+}
+
+SAMPLE_TRACKED_LINK: dict[str, Any] = {
+    "id": "tl-0000-0000-0000-000000000001",
+    "link_id": "lnk-0000-0000-0000-000000000001",
+    "original_url": "https://example.com/page",
+    "position": 0,
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z",
+    "anchor_text": "Click here",
+    "click_count": 5,
+    "unique_click_count": 3,
+    "first_clicked_at": "2025-01-02T10:00:00Z",
+    "last_clicked_at": "2025-01-03T14:00:00Z",
+}
+
+SAMPLE_BATCH_RESPONSE: dict[str, Any] = {
+    "total": 2,
+    "accepted": 1,
+    "rejected": 1,
+    "results": [
+        {
+            "index": 0,
+            "status": "accepted",
+            "email": {
+                "id": "e1000000-0000-0000-0000-000000000001",
+                "alias_id": "a1000000-0000-0000-0000-000000000001",
+                "domain_id": "d1000000-0000-0000-0000-000000000001",
+                "from_email": "support@example.com",
+                "to_email": "user@test.com",
+                "subject": "Test email",
+                "body_text": "Hello",
+                "status": "queued",
+                "provider_message_id": "msg-123",
+                "user_id": "u1000000-0000-0000-0000-000000000001",
+            },
+        },
+        {
+            "index": 1,
+            "status": "rejected",
+            "error": {
+                "message": "Invalid recipient",
+                "code": "INVALID_RECIPIENT",
+                "category": "validation",
+            },
+        },
+    ],
 }
 
 SAMPLE_INBOUND_SUMMARY: dict[str, Any] = {

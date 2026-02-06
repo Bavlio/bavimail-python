@@ -131,7 +131,7 @@ class Tags(BaseResource):
             body["is_pinned"] = is_pinned
         if is_visible is not UNSET:
             body["is_visible"] = is_visible
-        data = self._http.request("PATCH", f"/tags/{tag_id}", json=body)
+        data = self._http.request("PUT", f"/tags/{tag_id}", json=body)
         return Tag.from_dict(data)
 
     async def update_async(
@@ -166,7 +166,7 @@ class Tags(BaseResource):
         if is_visible is not UNSET:
             body["is_visible"] = is_visible
         data = await self._http.request_async(
-            "PATCH", f"/tags/{tag_id}", json=body
+            "PUT", f"/tags/{tag_id}", json=body
         )
         return Tag.from_dict(data)
 

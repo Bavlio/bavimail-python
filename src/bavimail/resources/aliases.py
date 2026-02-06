@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .._types import UNSET, _UnsetType
 from ..models.alias import Alias
 from ._base import BaseResource
 
@@ -13,15 +14,31 @@ _List = list  # alias to avoid shadowing by the list() method
 class Aliases(BaseResource):
     """Operations on email aliases."""
 
-    def create(self, domain_id: str, alias: str) -> Alias:
+    def create(
+        self,
+        domain_id: str,
+        alias: str,
+        *,
+        signature_html: str | None = None,
+    ) -> Alias:
         """Create a new alias on a domain."""
         body: dict[str, Any] = {"domain_id": domain_id, "alias": alias}
+        if signature_html is not None:
+            body["signature_html"] = signature_html
         data = self._http.request("POST", "/aliases", json=body)
         return Alias.from_dict(data)
 
-    async def create_async(self, domain_id: str, alias: str) -> Alias:
+    async def create_async(
+        self,
+        domain_id: str,
+        alias: str,
+        *,
+        signature_html: str | None = None,
+    ) -> Alias:
         """Create a new alias on a domain (async)."""
         body: dict[str, Any] = {"domain_id": domain_id, "alias": alias}
+        if signature_html is not None:
+            body["signature_html"] = signature_html
         data = await self._http.request_async("POST", "/aliases", json=body)
         return Alias.from_dict(data)
 
@@ -53,17 +70,39 @@ class Aliases(BaseResource):
         data = await self._http.request_async("GET", f"/aliases/{alias_id}")
         return Alias.from_dict(data)
 
-    def update(self, alias_id: str, alias: str) -> Alias:
-        """Rename an alias."""
+    def update(
+        self,
+        alias_id: str,
+        *,
+        alias: str | _UnsetType = UNSET,
+        signature_html: str | None | _UnsetType = UNSET,
+    ) -> Alias:
+        """Update an alias."""
+        body: dict[str, Any] = {}
+        if alias is not UNSET:
+            body["alias"] = alias
+        if signature_html is not UNSET:
+            body["signature_html"] = signature_html
         data = self._http.request(
-            "PUT", f"/aliases/{alias_id}", json={"alias": alias}
+            "PUT", f"/aliases/{alias_id}", json=body
         )
         return Alias.from_dict(data)
 
-    async def update_async(self, alias_id: str, alias: str) -> Alias:
-        """Rename an alias (async)."""
+    async def update_async(
+        self,
+        alias_id: str,
+        *,
+        alias: str | _UnsetType = UNSET,
+        signature_html: str | None | _UnsetType = UNSET,
+    ) -> Alias:
+        """Update an alias (async)."""
+        body: dict[str, Any] = {}
+        if alias is not UNSET:
+            body["alias"] = alias
+        if signature_html is not UNSET:
+            body["signature_html"] = signature_html
         data = await self._http.request_async(
-            "PUT", f"/aliases/{alias_id}", json={"alias": alias}
+            "PUT", f"/aliases/{alias_id}", json=body
         )
         return Alias.from_dict(data)
 

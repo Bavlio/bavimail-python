@@ -2,6 +2,7 @@
 
 from ._client import Bavimail
 from ._version import __version__
+from .events import EventType, WebhookEvent
 from .exceptions import (
     APIError,
     AuthenticationError,
@@ -84,6 +85,9 @@ __all__ = [
     "Webhook",
     "WebhookCreated",
     "WebhookSecret",
+    # Events
+    "EventType",
+    "WebhookEvent",
     # Utilities
     "iter_pages",
     "iter_pages_async",

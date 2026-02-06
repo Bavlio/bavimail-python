@@ -31,7 +31,14 @@ dev = [
     "pytest-httpx>=0.21",
     "mypy>=1.0",
     "ruff>=0.1",
+    "uvicorn>=0.20.0,<1.0.0",
+    "flask>=2.0",
+    "fastapi>=0.100.0",
 ]
+listener = ["uvicorn>=0.20.0,<1.0.0"]
+flask = ["flask>=2.0"]
+fastapi = ["fastapi>=0.100.0", "uvicorn>=0.20.0,<1.0.0"]
+all = ["uvicorn>=0.20.0,<1.0.0", "flask>=2.0", "fastapi>=0.100.0"]
 
 [project.urls]
 Homepage = "https://github.com/Bavlio/bavimail-python"

@@ -232,6 +232,22 @@ SAMPLE_WEBHOOK_CREATED: dict[str, Any] = {
     "is_verified": False,
 }
 
+SAMPLE_INTEGRATION: dict[str, Any] = {
+    "id": "int_001",
+    "display_name": "Test Integration",
+    "auth_mode": "hmac",
+}
+
+SAMPLE_BOOTSTRAP_RESPONSE: dict[str, Any] = {
+    "api_key": "bvm_test_bootstrapped_key_12345",
+    "created": True,
+    "expires_at": None,
+}
+
+SAMPLE_REVOKE_RESPONSE: dict[str, Any] = {
+    "revoked": True,
+}
+
 
 @pytest.fixture()
 def base_url() -> str:

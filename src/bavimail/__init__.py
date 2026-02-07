@@ -1,6 +1,7 @@
 """Bavimail Python SDK."""
 
 from ._client import Bavimail
+from ._integration_client import IntegrationClient
 from ._version import __version__
 from .events import EventType, WebhookEvent
 from .exceptions import (
@@ -22,6 +23,7 @@ from .models import (
     BatchEmailItemError,
     BatchEmailItemResult,
     BatchEmailResponse,
+    BootstrapApiKeyResponse,
     ConversationDetail,
     ConversationMessage,
     ConversationSummary,
@@ -37,7 +39,9 @@ from .models import (
     InboundAttachmentMetadata,
     InboundEmailDetail,
     InboundEmailSummary,
+    IntegrationInfo,
     MailFromStatusInfo,
+    RevokeApiKeyResponse,
     Tag,
     TagSummary,
     TrackedLink,
@@ -52,6 +56,7 @@ from .webhook_verification import verify_webhook_signature
 __all__ = [
     # Client
     "Bavimail",
+    "IntegrationClient",
     # Version
     "__version__",
     # Exceptions
@@ -72,6 +77,7 @@ __all__ = [
     "BatchEmailItemError",
     "BatchEmailItemResult",
     "BatchEmailResponse",
+    "BootstrapApiKeyResponse",
     "ConversationDetail",
     "ConversationMessage",
     "ConversationSummary",
@@ -87,7 +93,9 @@ __all__ = [
     "InboundAttachmentMetadata",
     "InboundEmailDetail",
     "InboundEmailSummary",
+    "IntegrationInfo",
     "MailFromStatusInfo",
+    "RevokeApiKeyResponse",
     "Tag",
     "TagSummary",
     "TrackedLink",

@@ -30,6 +30,11 @@ from .inbound_email import (
     InboundEmailSummary,
     Verdict,
 )
+from .integration import (
+    BootstrapApiKeyResponse,
+    IntegrationInfo,
+    RevokeApiKeyResponse,
+)
 from .tag import EmailTag, Tag, TagSummary
 from .webhook import Webhook, WebhookCreated, WebhookSecret
 
@@ -39,6 +44,7 @@ __all__ = [
     "BatchEmailItemError",
     "BatchEmailItemResult",
     "BatchEmailResponse",
+    "BootstrapApiKeyResponse",
     "ConversationDetail",
     "ConversationMessage",
     "ConversationSummary",
@@ -54,7 +60,9 @@ __all__ = [
     "InboundAttachmentMetadata",
     "InboundEmailDetail",
     "InboundEmailSummary",
+    "IntegrationInfo",
     "MailFromStatusInfo",
+    "RevokeApiKeyResponse",
     "Tag",
     "TagSummary",
     "TrackedLink",

@@ -234,6 +234,30 @@ class TestCreateWebhook:
         assert captured_body["event_types"] == ["email.inbound.received"]
         assert captured_body["description"] == "Test webhook"
 
+    def test_create_webhook_with_secret(self) -> None:
+        """Test creating a webhook with a custom secret."""
+        base_url = "https://api.bavimail.test"
+        captured_body: dict[str, Any] = {}
+        custom_secret = "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234"
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            import json
+            captured_body.update(json.loads(request.content))
+            # Return the same secret that was passed
+            response_data = {**SAMPLE_WEBHOOK_CREATED, "secret": custom_secret}
+            return json_response(response_data)
+
+        client = make_integration_client(base_url, handler)
+        result = client.create_webhook(
+            external_token="user_token_123",
+            url="https://example.com/webhook",
+            event_types=["email.inbound.received"],
+            secret=custom_secret,
+        )
+
+        assert captured_body["secret"] == custom_secret
+        assert result.secret == custom_secret
+
     @pytest.mark.asyncio
     async def test_create_webhook_async(self) -> None:
         """Test creating a webhook async."""

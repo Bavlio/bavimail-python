@@ -300,6 +300,7 @@ class IntegrationClient:
         event_types: list[str],
         *,
         description: str | None = None,
+        secret: str | None = None,
     ) -> WebhookCreated:
         """Create a webhook for a user.
 
@@ -308,9 +309,12 @@ class IntegrationClient:
             url: HTTPS URL where webhook events will be delivered.
             event_types: List of event types to subscribe to.
             description: Optional description for the webhook.
+            secret: Optional hex-encoded secret (64-128 chars). If omitted,
+                a random secret is generated. Pass the integration secret
+                to use a shared secret for all webhooks.
 
         Returns:
-            Created webhook including the secret (shown only once).
+            Created webhook including the secret.
         """
         path = f"/integrations/{self._integration_id}/webhooks"
         payload: dict[str, Any] = {
@@ -320,6 +324,8 @@ class IntegrationClient:
         }
         if description is not None:
             payload["description"] = description
+        if secret is not None:
+            payload["secret"] = secret
         data = self._request("POST", path, json=payload)
         return WebhookCreated.from_dict(data)
 
@@ -330,6 +336,7 @@ class IntegrationClient:
         event_types: list[str],
         *,
         description: str | None = None,
+        secret: str | None = None,
     ) -> WebhookCreated:
         """Create a webhook for a user (async).
 
@@ -338,9 +345,12 @@ class IntegrationClient:
             url: HTTPS URL where webhook events will be delivered.
             event_types: List of event types to subscribe to.
             description: Optional description for the webhook.
+            secret: Optional hex-encoded secret (64-128 chars). If omitted,
+                a random secret is generated. Pass the integration secret
+                to use a shared secret for all webhooks.
 
         Returns:
-            Created webhook including the secret (shown only once).
+            Created webhook including the secret.
         """
         path = f"/integrations/{self._integration_id}/webhooks"
         payload: dict[str, Any] = {
@@ -350,6 +360,8 @@ class IntegrationClient:
         }
         if description is not None:
             payload["description"] = description
+        if secret is not None:
+            payload["secret"] = secret
         data = await self._request_async("POST", path, json=payload)
         return WebhookCreated.from_dict(data)
 

@@ -153,7 +153,6 @@ class Domain:
         id: Unique identifier for the domain.
         domain: Domain name (e.g., "example.com").
         status: Verification status: "pending", "verifying", "verified", or "failed".
-        is_active: Whether the domain is active and can send/receive email.
         provider_key: Email provider identifier (e.g., "AWS" for Amazon SES).
         user_id: ID of the user who owns this domain.
         created_at: When the domain was created.
@@ -173,7 +172,6 @@ class Domain:
     id: str
     domain: str
     status: str
-    is_active: bool
     provider_key: str
     user_id: str
     created_at: datetime | None = None
@@ -195,7 +193,6 @@ class Domain:
             id=str(data["id"]),
             domain=data["domain"],
             status=data["status"],
-            is_active=data["is_active"],
             provider_key=data["provider_key"],
             user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),

@@ -24,6 +24,9 @@ class EventType(str, enum.Enum):
     OUTBOUND_CLICKED = "email.outbound.clicked"
     OUTBOUND_SCHEDULED = "email.outbound.scheduled"
     OUTBOUND_CANCELLED = "email.outbound.cancelled"
+    OUTBOUND_DELIVERED = "email.outbound.delivered"
+    OUTBOUND_BOUNCED = "email.outbound.bounced"
+    OUTBOUND_COMPLAINED = "email.outbound.complained"
     INBOUND_RECEIVED = "email.inbound.received"
     DOMAIN_VERIFIED = "domain.verified"
     DOMAIN_FAILED = "domain.failed"
@@ -315,4 +318,75 @@ class WebhookTestData:
         return cls(
             webhook_id=data["webhook_id"],
             test=data["test"],
+        )
+
+
+@dataclass(frozen=True)
+class OutboundDeliveredData:
+    """Typed payload for ``email.outbound.delivered`` events."""
+
+    email_id: str
+    from_email: str
+    to_email: str
+    subject: str
+    delivered_at: Optional[datetime] = None
+    provider_message_id: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> OutboundDeliveredData:
+        return cls(
+            email_id=data["email_id"],
+            from_email=data["from_email"],
+            to_email=data["to_email"],
+            subject=data["subject"],
+            delivered_at=_parse_datetime(data.get("delivered_at")),
+            provider_message_id=data.get("provider_message_id"),
+        )
+
+
+@dataclass(frozen=True)
+class OutboundBouncedData:
+    """Typed payload for ``email.outbound.bounced`` events."""
+
+    email_id: str
+    from_email: str
+    to_email: str
+    subject: str
+    bounced_at: Optional[datetime] = None
+    bounce_type: Optional[str] = None
+    bounce_sub_type: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> OutboundBouncedData:
+        return cls(
+            email_id=data["email_id"],
+            from_email=data["from_email"],
+            to_email=data["to_email"],
+            subject=data["subject"],
+            bounced_at=_parse_datetime(data.get("bounced_at")),
+            bounce_type=data.get("bounce_type"),
+            bounce_sub_type=data.get("bounce_sub_type"),
+        )
+
+
+@dataclass(frozen=True)
+class OutboundComplainedData:
+    """Typed payload for ``email.outbound.complained`` events."""
+
+    email_id: str
+    from_email: str
+    to_email: str
+    subject: str
+    complained_at: Optional[datetime] = None
+    complaint_feedback_type: Optional[str] = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> OutboundComplainedData:
+        return cls(
+            email_id=data["email_id"],
+            from_email=data["from_email"],
+            to_email=data["to_email"],
+            subject=data["subject"],
+            complained_at=_parse_datetime(data.get("complained_at")),
+            complaint_feedback_type=data.get("complaint_feedback_type"),
         )

@@ -287,3 +287,51 @@ class BatchEmailResponse:
                 BatchEmailItemResult.from_dict(r) for r in data.get("results", [])
             ],
         )
+
+
+@dataclass(frozen=True)
+class EmailEvent:
+    """An event on an outbound email (delivery, bounce, complaint, etc.)."""
+
+    id: str
+    event_type: str
+    occurred_at: datetime
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    bounce_type: str | None = None
+    bounce_sub_type: str | None = None
+    complaint_feedback_type: str | None = None
+    error_message: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EmailEvent:
+        return cls(
+            id=str(data["id"]),
+            event_type=data["event_type"],
+            occurred_at=_parse_datetime(data["occurred_at"]),  # type: ignore[arg-type]
+            created_at=_parse_datetime(data.get("created_at")),
+            updated_at=_parse_datetime(data.get("updated_at")),
+            bounce_type=data.get("bounce_type"),
+            bounce_sub_type=data.get("bounce_sub_type"),
+            complaint_feedback_type=data.get("complaint_feedback_type"),
+            error_message=data.get("error_message"),
+        )
+
+
+@dataclass(frozen=True)
+class EmailEventsResponse:
+    """Paginated response for email events."""
+
+    events: list[EmailEvent]
+    total: int
+    limit: int
+    offset: int
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EmailEventsResponse:
+        return cls(
+            events=[EmailEvent.from_dict(e) for e in data.get("events", [])],
+            total=data["total"],
+            limit=data["limit"],
+            offset=data["offset"],
+        )

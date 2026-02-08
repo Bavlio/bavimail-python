@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..models.email import BatchEmailResponse, Email, EmailClick, TrackedLink
+from ..models.email import (
+    BatchEmailResponse,
+    Email,
+    EmailClick,
+    EmailEvent,
+    EmailEventsResponse,
+    TrackedLink,
+)
 from ._base import BaseResource
 
 _List = list  # alias to avoid shadowing by the list() method
@@ -228,3 +235,45 @@ class Emails(BaseResource):
             "GET", f"/emails/{email_id}/links"
         )
         return [TrackedLink.from_dict(l) for l in data]
+
+    def list_events(
+        self,
+        email_id: str,
+        *,
+        event_type: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> EmailEventsResponse:
+        """List events for an email (delivered, bounced, complained, etc.)."""
+        params: dict[str, Any] = {}
+        if event_type is not None:
+            params["event_type"] = event_type
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        data = self._http.request(
+            "GET", f"/emails/{email_id}/events", params=params or None
+        )
+        return EmailEventsResponse.from_dict(data)
+
+    async def list_events_async(
+        self,
+        email_id: str,
+        *,
+        event_type: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> EmailEventsResponse:
+        """List events for an email (async)."""
+        params: dict[str, Any] = {}
+        if event_type is not None:
+            params["event_type"] = event_type
+        if limit is not None:
+            params["limit"] = limit
+        if offset is not None:
+            params["offset"] = offset
+        data = await self._http.request_async(
+            "GET", f"/emails/{email_id}/events", params=params or None
+        )
+        return EmailEventsResponse.from_dict(data)

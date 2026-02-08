@@ -335,3 +335,45 @@ class EmailEventsResponse:
             limit=data["limit"],
             offset=data["offset"],
         )
+
+
+@dataclass(frozen=True)
+class EmailValidationCheck:
+    """A single validation check result."""
+
+    name: str
+    passed: bool
+    weight: float
+    detail: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EmailValidationCheck:
+        return cls(
+            name=data["name"],
+            passed=data["passed"],
+            weight=data["weight"],
+            detail=data["detail"],
+        )
+
+
+@dataclass(frozen=True)
+class EmailValidationResponse:
+    """Response from email validation endpoint."""
+
+    email: str
+    risk_score: float
+    risk_level: str
+    is_risky: bool
+    checks: list[EmailValidationCheck] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EmailValidationResponse:
+        return cls(
+            email=data["email"],
+            risk_score=data["risk_score"],
+            risk_level=data["risk_level"],
+            is_risky=data["is_risky"],
+            checks=[
+                EmailValidationCheck.from_dict(c) for c in data.get("checks", [])
+            ],
+        )

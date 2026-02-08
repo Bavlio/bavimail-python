@@ -10,6 +10,7 @@ from ..models.email import (
     EmailClick,
     EmailEvent,
     EmailEventsResponse,
+    EmailValidationResponse,
     TrackedLink,
 )
 from ._base import BaseResource
@@ -277,3 +278,27 @@ class Emails(BaseResource):
             "GET", f"/emails/{email_id}/events", params=params or None
         )
         return EmailEventsResponse.from_dict(data)
+
+    def validate(
+        self,
+        email: str,
+        *,
+        check_mx: bool = True,
+    ) -> EmailValidationResponse:
+        """Validate an email address and assess its risk before sending."""
+        payload: dict[str, Any] = {"email": email, "check_mx": check_mx}
+        data = self._http.request("POST", "/emails/validate", json=payload)
+        return EmailValidationResponse.from_dict(data)
+
+    async def validate_async(
+        self,
+        email: str,
+        *,
+        check_mx: bool = True,
+    ) -> EmailValidationResponse:
+        """Validate an email address and assess its risk before sending (async)."""
+        payload: dict[str, Any] = {"email": email, "check_mx": check_mx}
+        data = await self._http.request_async(
+            "POST", "/emails/validate", json=payload
+        )
+        return EmailValidationResponse.from_dict(data)

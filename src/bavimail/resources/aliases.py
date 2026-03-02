@@ -55,9 +55,7 @@ class Aliases(BaseResource):
         params: dict[str, Any] = {}
         if domain_id is not None:
             params["domain_id"] = domain_id
-        data = await self._http.request_async(
-            "GET", "/aliases", params=params or None
-        )
+        data = await self._http.request_async("GET", "/aliases", params=params or None)
         return [Alias.from_dict(a) for a in data]
 
     def get(self, alias_id: str) -> Alias:
@@ -83,9 +81,7 @@ class Aliases(BaseResource):
             body["alias"] = alias
         if signature_html is not UNSET:
             body["signature_html"] = signature_html
-        data = self._http.request(
-            "PUT", f"/aliases/{alias_id}", json=body
-        )
+        data = self._http.request("PUT", f"/aliases/{alias_id}", json=body)
         return Alias.from_dict(data)
 
     async def update_async(
@@ -101,9 +97,7 @@ class Aliases(BaseResource):
             body["alias"] = alias
         if signature_html is not UNSET:
             body["signature_html"] = signature_html
-        data = await self._http.request_async(
-            "PUT", f"/aliases/{alias_id}", json=body
-        )
+        data = await self._http.request_async("PUT", f"/aliases/{alias_id}", json=body)
         return Alias.from_dict(data)
 
     def delete(self, alias_id: str) -> None:
@@ -113,3 +107,37 @@ class Aliases(BaseResource):
     async def delete_async(self, alias_id: str) -> None:
         """Delete an alias (async)."""
         await self._http.request_async("DELETE", f"/aliases/{alias_id}")
+
+    def set_warmup_token(self, alias_id: str, token: str) -> Alias:
+        """Set warmup token for an alias."""
+        data = self._http.request(
+            "PUT",
+            f"/aliases/{alias_id}/warmup-token",
+            json={"token": token},
+        )
+        return Alias.from_dict(data)
+
+    async def set_warmup_token_async(self, alias_id: str, token: str) -> Alias:
+        """Set warmup token for an alias (async)."""
+        data = await self._http.request_async(
+            "PUT",
+            f"/aliases/{alias_id}/warmup-token",
+            json={"token": token},
+        )
+        return Alias.from_dict(data)
+
+    def clear_warmup_token(self, alias_id: str) -> Alias:
+        """Clear warmup token for an alias."""
+        data = self._http.request(
+            "DELETE",
+            f"/aliases/{alias_id}/warmup-token",
+        )
+        return Alias.from_dict(data)
+
+    async def clear_warmup_token_async(self, alias_id: str) -> Alias:
+        """Clear warmup token for an alias (async)."""
+        data = await self._http.request_async(
+            "DELETE",
+            f"/aliases/{alias_id}/warmup-token",
+        )
+        return Alias.from_dict(data)

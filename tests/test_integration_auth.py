@@ -31,10 +31,7 @@ class TestHMACAuth:
 
         expected_body_sha256 = hashlib.sha256(body).hexdigest()
         expected = (
-            f"POST\n"
-            f"/integrations/int_123/api-keys/bootstrap\n"
-            f"{timestamp}\n"
-            f"{expected_body_sha256}"
+            f"POST\n/integrations/int_123/api-keys/bootstrap\n{timestamp}\n{expected_body_sha256}"
         )
         assert canonical == expected
 
@@ -129,12 +126,7 @@ class TestHMACAuth:
 
         # Verify the signature is correct
         body_sha256 = hashlib.sha256(body).hexdigest()
-        canonical = (
-            f"POST\n"
-            f"/integrations/int_123/api-keys/bootstrap\n"
-            f"1700000000\n"
-            f"{body_sha256}"
-        )
+        canonical = f"POST\n/integrations/int_123/api-keys/bootstrap\n1700000000\n{body_sha256}"
         expected_signature = hmac.new(
             bytes.fromhex(secret_hex),
             canonical.encode("utf-8"),
@@ -144,7 +136,7 @@ class TestHMACAuth:
 
     @patch("bavimail._integration_auth.time.time")
     def test_auth_flow_with_query_params(self, mock_time: patch) -> None:
-        """Test that auth_flow includes query params in canonical string."""
+        """Test that auth_flow excludes query params from canonical string."""
         mock_time.return_value = 1700000000
         secret_hex = "abcd1234abcd1234abcd1234abcd1234"
         auth = HMACAuth("int_123", secret_hex)
@@ -158,16 +150,9 @@ class TestHMACAuth:
         flow = auth.auth_flow(request)
         signed_request = next(flow)
 
-        # Verify the signature includes query params
-        # Get the actual query string from the request to avoid encoding differences
-        actual_query = str(request.url.query)
+        # Verify the signature excludes query params
         empty_sha256 = hashlib.sha256(b"").hexdigest()
-        canonical = (
-            f"GET\n"
-            f"/integrations/int_123/webhooks?{actual_query}\n"
-            f"1700000000\n"
-            f"{empty_sha256}"
-        )
+        canonical = f"GET\n/integrations/int_123/webhooks\n1700000000\n{empty_sha256}"
         expected_signature = hmac.new(
             bytes.fromhex(secret_hex),
             canonical.encode("utf-8"),

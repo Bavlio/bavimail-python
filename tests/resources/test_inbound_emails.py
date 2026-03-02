@@ -25,6 +25,18 @@ def test_list_inbound_emails() -> None:
     client.close()
 
 
+def test_list_inbound_emails_with_include_warmup() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.params["include_warmup"] == "true"
+        return json_response([SAMPLE_INBOUND_SUMMARY])
+
+    client = make_client("https://test.com", "key", handler)
+    emails = client.inbound_emails.list(include_warmup=True)
+    assert len(emails) == 1
+    client.close()
+
+
 def test_get_inbound_email() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         return json_response(SAMPLE_INBOUND_DETAIL)

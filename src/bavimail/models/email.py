@@ -84,6 +84,8 @@ class Email:
     attachments: list[AttachmentMetadata] | None = None
     attachment_count: int = 0
     provider_metadata: dict[str, Any] | None = field(default=None)
+    warmup_suspicious: bool = False
+    warmup_suspicious_tokens: list[str] = field(default_factory=list)
     sent_at: datetime | None = None
     delivered_at: datetime | None = None
     error_message: str | None = None
@@ -106,10 +108,16 @@ class Email:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Email:
         attachments_raw = data.get("attachments")
+        warmup_tokens_raw = data.get("warmup_suspicious_tokens")
         attachments = (
             [AttachmentMetadata.from_dict(a) for a in attachments_raw]
             if attachments_raw
             else None
+        )
+        warmup_suspicious_tokens = (
+            [str(token) for token in warmup_tokens_raw]
+            if isinstance(warmup_tokens_raw, list)
+            else []
         )
         return cls(
             id=str(data["id"]),
@@ -133,6 +141,8 @@ class Email:
             attachments=attachments,
             attachment_count=data.get("attachment_count", 0),
             provider_metadata=data.get("provider_metadata"),
+            warmup_suspicious=bool(data.get("warmup_suspicious", False)),
+            warmup_suspicious_tokens=warmup_suspicious_tokens,
             sent_at=_parse_datetime(data.get("sent_at")),
             delivered_at=_parse_datetime(data.get("delivered_at")),
             error_message=data.get("error_message"),

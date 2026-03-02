@@ -20,6 +20,7 @@ class InboundEmails(BaseResource):
         alias_id: str | None = None,
         tag_ids: _List[str] | None = None,
         tag_match: str | None = None,
+        include_warmup: bool | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> _List[InboundEmailSummary]:
@@ -31,6 +32,8 @@ class InboundEmails(BaseResource):
             params["tag_ids"] = ",".join(tag_ids)
         if tag_match is not None:
             params["tag_match"] = tag_match
+        if include_warmup is not None:
+            params["include_warmup"] = include_warmup
         if limit is not None:
             params["limit"] = limit
         if offset is not None:
@@ -44,6 +47,7 @@ class InboundEmails(BaseResource):
         alias_id: str | None = None,
         tag_ids: _List[str] | None = None,
         tag_match: str | None = None,
+        include_warmup: bool | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> _List[InboundEmailSummary]:
@@ -55,6 +59,8 @@ class InboundEmails(BaseResource):
             params["tag_ids"] = ",".join(tag_ids)
         if tag_match is not None:
             params["tag_match"] = tag_match
+        if include_warmup is not None:
+            params["include_warmup"] = include_warmup
         if limit is not None:
             params["limit"] = limit
         if offset is not None:

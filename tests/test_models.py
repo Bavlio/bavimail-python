@@ -146,6 +146,26 @@ def test_email_from_dict() -> None:
     assert email.first_opened_at is not None
 
 
+def test_email_from_dict_with_warmup_fields() -> None:
+    data = {
+        "id": "e1",
+        "alias_id": "a1",
+        "domain_id": "d1",
+        "from_email": "support@example.com",
+        "to_email": "user@test.com",
+        "subject": "Test",
+        "body_text": "Hello",
+        "status": "sent",
+        "provider_message_id": "msg-1",
+        "user_id": "u1",
+        "warmup_suspicious": True,
+        "warmup_suspicious_tokens": ["motor-graph", "river-stone"],
+    }
+    email = Email.from_dict(data)
+    assert email.warmup_suspicious is True
+    assert email.warmup_suspicious_tokens == ["motor-graph", "river-stone"]
+
+
 def test_email_with_attachments() -> None:
     data = {
         "id": "e1",
@@ -556,3 +576,17 @@ def test_alias_from_dict_with_signature() -> None:
     alias = Alias.from_dict(data)
     assert alias.signature_html == "<p>Best regards</p>"
     assert alias.signature_text == "Best regards"
+
+
+def test_alias_from_dict_with_warmup_token() -> None:
+    data = {
+        "id": "a1",
+        "domain_id": "d1",
+        "alias": "support",
+        "full_email": "support@example.com",
+        "domain_name": "example.com",
+        "user_id": "u1",
+        "warmup_token": "motor-graph",
+    }
+    alias = Alias.from_dict(data)
+    assert alias.warmup_token == "motor-graph"

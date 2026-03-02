@@ -124,3 +124,33 @@ def test_delete_alias() -> None:
     client = make_client("https://test.com", "key", handler)
     client.aliases.delete(SAMPLE_ALIAS["id"])
     client.close()
+
+
+def test_set_warmup_token() -> None:
+    alias_response = {**SAMPLE_ALIAS, "warmup_token": "motor-graph"}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "PUT"
+        assert str(request.url).endswith(f"/aliases/{SAMPLE_ALIAS['id']}/warmup-token")
+        body = json.loads(request.content)
+        assert body["token"] == "motor-graph"
+        return json_response(alias_response)
+
+    client = make_client("https://test.com", "key", handler)
+    alias = client.aliases.set_warmup_token(SAMPLE_ALIAS["id"], "motor-graph")
+    assert alias.warmup_token == "motor-graph"
+    client.close()
+
+
+def test_clear_warmup_token() -> None:
+    alias_response = {**SAMPLE_ALIAS, "warmup_token": None}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "DELETE"
+        assert str(request.url).endswith(f"/aliases/{SAMPLE_ALIAS['id']}/warmup-token")
+        return json_response(alias_response)
+
+    client = make_client("https://test.com", "key", handler)
+    alias = client.aliases.clear_warmup_token(SAMPLE_ALIAS["id"])
+    assert alias.warmup_token is None
+    client.close()

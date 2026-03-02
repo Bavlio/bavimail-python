@@ -18,6 +18,7 @@ class Conversations(BaseResource):
         *,
         alias_id: str | None = None,
         domain_id: str | None = None,
+        include_warmup: bool | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> _List[ConversationSummary]:
@@ -27,6 +28,8 @@ class Conversations(BaseResource):
             params["alias_id"] = alias_id
         if domain_id is not None:
             params["domain_id"] = domain_id
+        if include_warmup is not None:
+            params["include_warmup"] = include_warmup
         if limit is not None:
             params["limit"] = limit
         if offset is not None:
@@ -41,6 +44,7 @@ class Conversations(BaseResource):
         *,
         alias_id: str | None = None,
         domain_id: str | None = None,
+        include_warmup: bool | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> _List[ConversationSummary]:
@@ -50,6 +54,8 @@ class Conversations(BaseResource):
             params["alias_id"] = alias_id
         if domain_id is not None:
             params["domain_id"] = domain_id
+        if include_warmup is not None:
+            params["include_warmup"] = include_warmup
         if limit is not None:
             params["limit"] = limit
         if offset is not None:

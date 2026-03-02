@@ -31,6 +31,18 @@ def test_list_conversations_with_filters() -> None:
     client.close()
 
 
+def test_list_conversations_with_include_warmup() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.params["include_warmup"] == "true"
+        return json_response([SAMPLE_CONVERSATION])
+
+    client = make_client("https://test.com", "key", handler)
+    conversations = client.conversations.list(include_warmup=True)
+    assert len(conversations) == 1
+    client.close()
+
+
 def test_get_conversation() -> None:
     detail = {
         **SAMPLE_CONVERSATION,

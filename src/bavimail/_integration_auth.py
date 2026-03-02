@@ -21,6 +21,9 @@ class HMACAuth(httpx.Auth):
         {METHOD}\\n{PATH}\\n{TIMESTAMP}\\n{BODY_SHA256}
 
     Where BODY_SHA256 is the SHA-256 hex digest of the raw request body.
+
+    Note: the signed PATH excludes query parameters to match Bavimail
+    server-side verification.
     """
 
     def __init__(self, integration_id: str, secret: str | bytes) -> None:
@@ -36,9 +39,7 @@ class HMACAuth(httpx.Auth):
         else:
             self._secret = secret
 
-    def auth_flow(
-        self, request: httpx.Request
-    ) -> Generator[httpx.Request, httpx.Response, None]:
+    def auth_flow(self, request: httpx.Request) -> Generator[httpx.Request, httpx.Response, None]:
         """Add HMAC signature headers to the request."""
         timestamp = str(int(time.time()))
         body = request.content or b""
@@ -46,14 +47,10 @@ class HMACAuth(httpx.Auth):
 
         # Build canonical string
         path = request.url.path
-        if request.url.query:
-            path = f"{path}?{request.url.query}"
         canonical = f"{request.method}\n{path}\n{timestamp}\n{body_sha256}"
 
         # Compute HMAC signature
-        signature = hmac.new(
-            self._secret, canonical.encode("utf-8"), hashlib.sha256
-        ).hexdigest()
+        signature = hmac.new(self._secret, canonical.encode("utf-8"), hashlib.sha256).hexdigest()
 
         # Add headers
         request.headers["X-Timestamp"] = timestamp
@@ -61,14 +58,12 @@ class HMACAuth(httpx.Auth):
 
         yield request
 
-    def build_canonical_string(
-        self, method: str, path: str, timestamp: str, body: bytes
-    ) -> str:
+    def build_canonical_string(self, method: str, path: str, timestamp: str, body: bytes) -> str:
         """Build the canonical string for signing (exposed for testing).
 
         Args:
             method: HTTP method (GET, POST, etc.)
-            path: Request path including query string
+            path: Request path used in canonical signing
             timestamp: Unix epoch timestamp as string
             body: Raw request body bytes
 
@@ -87,6 +82,4 @@ class HMACAuth(httpx.Auth):
         Returns:
             Hex-encoded HMAC-SHA256 signature.
         """
-        return hmac.new(
-            self._secret, canonical_string.encode("utf-8"), hashlib.sha256
-        ).hexdigest()
+        return hmac.new(self._secret, canonical_string.encode("utf-8"), hashlib.sha256).hexdigest()

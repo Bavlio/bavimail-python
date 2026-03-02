@@ -23,6 +23,7 @@ class Alias:
     updated_at: datetime | None = None
     signature_html: str | None = None
     signature_text: str | None = None
+    warmup_token: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Alias:
@@ -37,4 +38,5 @@ class Alias:
             updated_at=_parse_datetime(data.get("updated_at")),
             signature_html=data.get("signature_html"),
             signature_text=data.get("signature_text"),
+            warmup_token=data.get("warmup_token"),
         )

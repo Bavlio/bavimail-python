@@ -120,6 +120,42 @@ def test_send_email_with_click_tracking() -> None:
     client.close()
 
 
+def test_send_email_with_attachment_references() -> None:
+    attachment_email = {
+        **SAMPLE_EMAIL,
+        "attachments": [
+            {
+                "id": "att-0000-0000-0000-000000000001",
+                "filename": "invoice.pdf",
+                "size_bytes": 1234,
+                "mime_type": "application/pdf",
+                "sha256": "abc123",
+                "content_id": None,
+                "is_inline": False,
+            }
+        ],
+        "attachment_count": 1,
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        assert body["attachments"] == [{"attachment_id": "att-0000-0000-0000-000000000001"}]
+        return json_response(attachment_email)
+
+    client = make_client("https://test.com", "key", handler)
+    email = client.emails.send(
+        alias_id=SAMPLE_EMAIL["alias_id"],
+        to_email="user@test.com",
+        subject="Attachment refs",
+        body="Hello",
+        attachments=[{"attachment_id": "att-0000-0000-0000-000000000001"}],
+    )
+    assert email.attachment_count == 1
+    assert email.attachments is not None
+    assert email.attachments[0].id == "att-0000-0000-0000-000000000001"
+    client.close()
+
+
 def test_batch_send() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "POST"

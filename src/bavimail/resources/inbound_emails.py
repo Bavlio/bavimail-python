@@ -90,16 +90,16 @@ class InboundEmails(BaseResource):
             "GET", f"/inbound-emails/{email_id}/raw"
         )
 
-    def download_attachment(self, email_id: str, index: int) -> bytes:
-        """Download an attachment by index."""
+    def download_attachment(self, email_id: str, attachment_id: str) -> bytes:
+        """Download an attachment by attachment file ID."""
         return self._http.request_bytes(
-            "GET", f"/inbound-emails/{email_id}/attachments/{index}"
+            "GET", f"/inbound-emails/{email_id}/attachments/{attachment_id}"
         )
 
-    async def download_attachment_async(self, email_id: str, index: int) -> bytes:
-        """Download an attachment by index (async)."""
+    async def download_attachment_async(self, email_id: str, attachment_id: str) -> bytes:
+        """Download an attachment by attachment file ID (async)."""
         return await self._http.request_bytes_async(
-            "GET", f"/inbound-emails/{email_id}/attachments/{index}"
+            "GET", f"/inbound-emails/{email_id}/attachments/{attachment_id}"
         )
 
     def delete(self, email_id: str) -> None:

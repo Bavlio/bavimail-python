@@ -62,13 +62,14 @@ def test_download_raw() -> None:
 
 def test_download_attachment() -> None:
     attachment_bytes = b"PDF content here"
+    attachment_id = "att-0000-0000-0000-000000000001"
 
     def handler(request: httpx.Request) -> httpx.Response:
-        assert "/attachments/0" in str(request.url)
+        assert f"/attachments/{attachment_id}" in str(request.url)
         return httpx.Response(200, content=attachment_bytes)
 
     client = make_client("https://test.com", "key", handler)
-    data = client.inbound_emails.download_attachment(SAMPLE_INBOUND_DETAIL["id"], 0)
+    data = client.inbound_emails.download_attachment(SAMPLE_INBOUND_DETAIL["id"], attachment_id)
     assert data == attachment_bytes
     client.close()
 

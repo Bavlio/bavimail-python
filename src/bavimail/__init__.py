@@ -19,7 +19,10 @@ from .exceptions import (
 )
 from .models import (
     Alias,
+    AttachmentFile,
     AttachmentMetadata,
+    AttachmentUploadFile,
+    AttachmentUploadResponse,
     BatchEmailItemError,
     BatchEmailItemResult,
     BatchEmailResponse,
@@ -73,7 +76,10 @@ __all__ = [
     "WebhookVerificationError",
     # Models
     "Alias",
+    "AttachmentFile",
     "AttachmentMetadata",
+    "AttachmentUploadFile",
+    "AttachmentUploadResponse",
     "BatchEmailItemError",
     "BatchEmailItemResult",
     "BatchEmailResponse",

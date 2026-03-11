@@ -13,18 +13,22 @@ from ._base import _parse_datetime
 class AttachmentMetadata:
     """Metadata for an email attachment (no content)."""
 
+    id: str | None = None
     filename: str | None = None
     size_bytes: int = 0
     mime_type: str = ""
+    sha256: str | None = None
     content_id: str | None = None
     is_inline: bool = False
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> AttachmentMetadata:
         return cls(
+            id=str(data["id"]) if data.get("id") else None,
             filename=data.get("filename"),
             size_bytes=data["size_bytes"],
             mime_type=data["mime_type"],
+            sha256=data.get("sha256"),
             content_id=data.get("content_id"),
             is_inline=data.get("is_inline", False),
         )
@@ -80,7 +84,7 @@ class Email:
     conversation_id: str | None = None
     body_html: str | None = None
     in_reply_to: str | None = None
-    references: str | None = None
+    thread_references: str | None = None
     attachments: list[AttachmentMetadata] | None = None
     attachment_count: int = 0
     provider_metadata: dict[str, Any] | None = field(default=None)
@@ -110,9 +114,7 @@ class Email:
         attachments_raw = data.get("attachments")
         warmup_tokens_raw = data.get("warmup_suspicious_tokens")
         attachments = (
-            [AttachmentMetadata.from_dict(a) for a in attachments_raw]
-            if attachments_raw
-            else None
+            [AttachmentMetadata.from_dict(a) for a in attachments_raw] if attachments_raw else None
         )
         warmup_suspicious_tokens = (
             [str(token) for token in warmup_tokens_raw]
@@ -132,12 +134,10 @@ class Email:
             user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),
             updated_at=_parse_datetime(data.get("updated_at")),
-            conversation_id=(
-                str(data["conversation_id"]) if data.get("conversation_id") else None
-            ),
+            conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             body_html=data.get("body_html"),
             in_reply_to=data.get("in_reply_to"),
-            references=data.get("references"),
+            thread_references=data.get("thread_references"),
             attachments=attachments,
             attachment_count=data.get("attachment_count", 0),
             provider_metadata=data.get("provider_metadata"),
@@ -293,9 +293,7 @@ class BatchEmailResponse:
             total=data["total"],
             accepted=data["accepted"],
             rejected=data["rejected"],
-            results=[
-                BatchEmailItemResult.from_dict(r) for r in data.get("results", [])
-            ],
+            results=[BatchEmailItemResult.from_dict(r) for r in data.get("results", [])],
         )
 
 
@@ -383,7 +381,5 @@ class EmailValidationResponse:
             risk_score=data["risk_score"],
             risk_level=data["risk_level"],
             is_risky=data["is_risky"],
-            checks=[
-                EmailValidationCheck.from_dict(c) for c in data.get("checks", [])
-            ],
+            checks=[EmailValidationCheck.from_dict(c) for c in data.get("checks", [])],
         )

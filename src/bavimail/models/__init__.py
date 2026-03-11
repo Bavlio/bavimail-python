@@ -1,6 +1,7 @@
 """Data models for the Bavimail SDK."""
 
 from .alias import Alias
+from .attachment import AttachmentFile, AttachmentUploadFile, AttachmentUploadResponse
 from .conversation import (
     ConversationDetail,
     ConversationMessage,
@@ -40,7 +41,10 @@ from .webhook import Webhook, WebhookCreated, WebhookSecret
 
 __all__ = [
     "Alias",
+    "AttachmentFile",
     "AttachmentMetadata",
+    "AttachmentUploadFile",
+    "AttachmentUploadResponse",
     "BatchEmailItemError",
     "BatchEmailItemResult",
     "BatchEmailResponse",

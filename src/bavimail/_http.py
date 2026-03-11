@@ -82,6 +82,7 @@ class HttpClient:
         path: str,
         *,
         json: Any | None = None,
+        files: Any | None = None,
         params: dict[str, Any] | None = None,
     ) -> Any:
         """Make a synchronous HTTP request and return parsed JSON."""
@@ -91,6 +92,7 @@ class HttpClient:
             method,
             url,
             json=json,
+            files=files,
             params=self._clean_params(params),
         )
         request_id = response.headers.get("x-request-id")
@@ -106,6 +108,7 @@ class HttpClient:
         path: str,
         *,
         json: Any | None = None,
+        files: Any | None = None,
         params: dict[str, Any] | None = None,
     ) -> Any:
         """Make an asynchronous HTTP request and return parsed JSON."""
@@ -115,6 +118,7 @@ class HttpClient:
             method,
             url,
             json=json,
+            files=files,
             params=self._clean_params(params),
         )
         request_id = response.headers.get("x-request-id")

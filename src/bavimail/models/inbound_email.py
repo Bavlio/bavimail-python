@@ -48,24 +48,24 @@ class TagSummaryEmbed:
 class InboundAttachmentMetadata:
     """Attachment metadata from an inbound email."""
 
+    id: str | None = None
     size_bytes: int
     mime_type: str
     is_inline: bool
     filename: str | None = None
+    sha256: str | None = None
     content_id: str | None = None
-    storage_uri: str | None = None
-    storage_scheme: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> InboundAttachmentMetadata:
         return cls(
+            id=str(data["id"]) if data.get("id") else None,
             size_bytes=data["size_bytes"],
             mime_type=data["mime_type"],
             is_inline=data["is_inline"],
             filename=data.get("filename"),
+            sha256=data.get("sha256"),
             content_id=data.get("content_id"),
-            storage_uri=data.get("storage_uri"),
-            storage_scheme=data.get("storage_scheme"),
         )
 
 
@@ -124,9 +124,7 @@ class InboundEmailSummary:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> InboundEmailSummary:
         tags_raw = data.get("tags")
-        tags = (
-            [TagSummaryEmbed.from_dict(t) for t in tags_raw] if tags_raw else None
-        )
+        tags = [TagSummaryEmbed.from_dict(t) for t in tags_raw] if tags_raw else None
         return cls(
             id=str(data["id"]),
             alias_id=str(data["alias_id"]),
@@ -143,9 +141,7 @@ class InboundEmailSummary:
             user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),
             updated_at=_parse_datetime(data.get("updated_at")),
-            conversation_id=(
-                str(data["conversation_id"]) if data.get("conversation_id") else None
-            ),
+            conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             from_name=data.get("from_name"),
             provider_received_at=_parse_datetime(data.get("provider_received_at")),
             processed_at=_parse_datetime(data.get("processed_at")),
@@ -228,7 +224,7 @@ class InboundEmailDetail:
     headers: dict[str, str] | None = None
     message_id: str | None = None
     in_reply_to: str | None = None
-    references: list[str] | None = None
+    thread_references: list[str] | None = None
     attachments: list[InboundAttachmentMetadata] | None = None
     provider_received_at: datetime | None = None
     spam_verdict: Verdict | None = None
@@ -250,9 +246,7 @@ class InboundEmailDetail:
             else None
         )
         tags_raw = data.get("tags")
-        tags = (
-            [TagSummaryEmbed.from_dict(t) for t in tags_raw] if tags_raw else None
-        )
+        tags = [TagSummaryEmbed.from_dict(t) for t in tags_raw] if tags_raw else None
         return cls(
             id=str(data["id"]),
             alias_id=str(data["alias_id"]),
@@ -270,9 +264,7 @@ class InboundEmailDetail:
             user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),
             updated_at=_parse_datetime(data.get("updated_at")),
-            conversation_id=(
-                str(data["conversation_id"]) if data.get("conversation_id") else None
-            ),
+            conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             from_name=data.get("from_name"),
             reply_to=data.get("reply_to"),
             cc_emails=data.get("cc_emails"),
@@ -283,7 +275,7 @@ class InboundEmailDetail:
             headers=data.get("headers"),
             message_id=data.get("message_id"),
             in_reply_to=data.get("in_reply_to"),
-            references=data.get("references"),
+            thread_references=data.get("thread_references"),
             attachments=attachments,
             provider_received_at=_parse_datetime(data.get("provider_received_at")),
             spam_verdict=Verdict.from_dict(data.get("spam_verdict")),

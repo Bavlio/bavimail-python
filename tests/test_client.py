@@ -15,6 +15,7 @@ def test_client_has_all_resources() -> None:
     )
     assert hasattr(client, "domains")
     assert hasattr(client, "aliases")
+    assert hasattr(client, "attachments")
     assert hasattr(client, "emails")
     assert hasattr(client, "inbound_emails")
     assert hasattr(client, "conversations")

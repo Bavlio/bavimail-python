@@ -23,10 +23,11 @@ def test_list_conversations_with_filters() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         url_str = str(request.url)
         assert "alias_id" in url_str
+        assert "domain_id" in url_str
         return json_response([SAMPLE_CONVERSATION])
 
     client = make_client("https://test.com", "key", handler)
-    conversations = client.conversations.list(alias_id="a1")
+    conversations = client.conversations.list(alias_id="a1", domain_id="d1")
     assert len(conversations) == 1
     client.close()
 

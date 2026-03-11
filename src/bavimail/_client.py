@@ -10,6 +10,7 @@ import httpx
 
 from ._http import HttpClient
 from .events import EventType, WebhookEvent
+from .resources.attachments import Attachments
 from .resources.aliases import Aliases
 from .resources.conversations import Conversations
 from .resources.domains import Domains
@@ -65,6 +66,7 @@ class Bavimail:
         )
         self.domains = Domains(self._http)
         self.aliases = Aliases(self._http)
+        self.attachments = Attachments(self._http)
         self.emails = Emails(self._http)
         self.inbound_emails = InboundEmails(self._http)
         self.conversations = Conversations(self._http)

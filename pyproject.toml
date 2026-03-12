@@ -50,6 +50,13 @@ path = "src/bavimail/_version.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/bavimail"]
 
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src/bavimail",
+    "/README.md",
+    "/pyproject.toml",
+]
+
 [tool.mypy]
 strict = true
 python_version = "3.9"

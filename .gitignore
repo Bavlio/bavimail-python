@@ -11,5 +11,7 @@ build/
 .pytest_cache/
 .tox/
 .venv/
+.venv2/
+.venv-py/
 venv/
 .idea

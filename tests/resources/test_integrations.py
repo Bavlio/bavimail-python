@@ -132,7 +132,7 @@ class TestBootstrapApiKey:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_integration_client(base_url, handler)
-        result = client.bootstrap_api_key("user_token_123")
+        result = client.bootstrap_api_key("user_assertion_123")
 
         assert isinstance(result, BootstrapApiKeyResponse)
         assert result.api_key == "bvm_test_bootstrapped_key_12345"
@@ -146,13 +146,14 @@ class TestBootstrapApiKey:
 
         def handler(request: httpx.Request) -> httpx.Response:
             import json
+
             captured_body.update(json.loads(request.content))
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_integration_client(base_url, handler)
-        client.bootstrap_api_key("user_token_123", label="Production Key")
+        client.bootstrap_api_key("user_assertion_123", label="Production Key")
 
-        assert captured_body["external_token"] == "user_token_123"
+        assert captured_body["user_assertion"] == "user_assertion_123"
         assert captured_body["label"] == "Production Key"
 
     @pytest.mark.asyncio
@@ -164,7 +165,7 @@ class TestBootstrapApiKey:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_async_integration_client(base_url, handler)
-        result = await client.bootstrap_api_key_async("user_token_123")
+        result = await client.bootstrap_api_key_async("user_assertion_123")
 
         assert isinstance(result, BootstrapApiKeyResponse)
         assert result.api_key == "bvm_test_bootstrapped_key_12345"
@@ -184,7 +185,7 @@ class TestRevokeApiKey:
             return json_response(SAMPLE_REVOKE_RESPONSE)
 
         client = make_integration_client(base_url, handler)
-        result = client.revoke_api_key("user_token_123")
+        result = client.revoke_api_key("user_assertion_123")
 
         assert isinstance(result, RevokeApiKeyResponse)
         assert result.revoked is True
@@ -198,7 +199,7 @@ class TestRevokeApiKey:
             return json_response(SAMPLE_REVOKE_RESPONSE)
 
         client = make_async_integration_client(base_url, handler)
-        result = await client.revoke_api_key_async("user_token_123")
+        result = await client.revoke_api_key_async("user_assertion_123")
 
         assert isinstance(result, RevokeApiKeyResponse)
         assert result.revoked is True
@@ -214,6 +215,7 @@ class TestCreateWebhook:
 
         def handler(request: httpx.Request) -> httpx.Response:
             import json
+
             assert request.url.path == "/integrations/int_001/webhooks"
             assert request.method == "POST"
             captured_body.update(json.loads(request.content))
@@ -221,7 +223,7 @@ class TestCreateWebhook:
 
         client = make_integration_client(base_url, handler)
         result = client.create_webhook(
-            external_token="user_token_123",
+            user_assertion="user_assertion_123",
             url="https://example.com/webhook",
             event_types=["email.inbound.received"],
             description="Test webhook",
@@ -229,7 +231,7 @@ class TestCreateWebhook:
 
         assert isinstance(result, WebhookCreated)
         assert result.secret == "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-        assert captured_body["external_token"] == "user_token_123"
+        assert captured_body["user_assertion"] == "user_assertion_123"
         assert captured_body["url"] == "https://example.com/webhook"
         assert captured_body["event_types"] == ["email.inbound.received"]
         assert captured_body["description"] == "Test webhook"
@@ -242,6 +244,7 @@ class TestCreateWebhook:
 
         def handler(request: httpx.Request) -> httpx.Response:
             import json
+
             captured_body.update(json.loads(request.content))
             # Return the same secret that was passed
             response_data = {**SAMPLE_WEBHOOK_CREATED, "secret": custom_secret}
@@ -249,7 +252,7 @@ class TestCreateWebhook:
 
         client = make_integration_client(base_url, handler)
         result = client.create_webhook(
-            external_token="user_token_123",
+            user_assertion="user_assertion_123",
             url="https://example.com/webhook",
             event_types=["email.inbound.received"],
             secret=custom_secret,
@@ -268,7 +271,7 @@ class TestCreateWebhook:
 
         client = make_async_integration_client(base_url, handler)
         result = await client.create_webhook_async(
-            external_token="user_token_123",
+            user_assertion="user_assertion_123",
             url="https://example.com/webhook",
             event_types=["email.inbound.received"],
         )
@@ -286,11 +289,11 @@ class TestListWebhooks:
         def handler(request: httpx.Request) -> httpx.Response:
             assert request.url.path == "/integrations/int_001/webhooks"
             assert request.method == "GET"
-            assert "external_token=user_token_123" in str(request.url)
+            assert "user_assertion=user_assertion_123" in str(request.url)
             return json_response([SAMPLE_WEBHOOK])
 
         client = make_integration_client(base_url, handler)
-        result = client.list_webhooks("user_token_123")
+        result = client.list_webhooks("user_assertion_123")
 
         assert len(result) == 1
         assert isinstance(result[0], Webhook)
@@ -305,7 +308,7 @@ class TestListWebhooks:
             return json_response([SAMPLE_WEBHOOK])
 
         client = make_async_integration_client(base_url, handler)
-        result = await client.list_webhooks_async("user_token_123")
+        result = await client.list_webhooks_async("user_assertion_123")
 
         assert len(result) == 1
         assert isinstance(result[0], Webhook)
@@ -321,15 +324,16 @@ class TestDeleteWebhook:
 
         def handler(request: httpx.Request) -> httpx.Response:
             import json
+
             assert "/integrations/int_001/webhooks/wh_123" in request.url.path
             assert request.method == "DELETE"
             captured_body.update(json.loads(request.content))
             return no_content_response()
 
         client = make_integration_client(base_url, handler)
-        client.delete_webhook("user_token_123", "wh_123")
+        client.delete_webhook("user_assertion_123", "wh_123")
 
-        assert captured_body["external_token"] == "user_token_123"
+        assert captured_body["user_assertion"] == "user_assertion_123"
 
     @pytest.mark.asyncio
     async def test_delete_webhook_async(self) -> None:
@@ -340,7 +344,7 @@ class TestDeleteWebhook:
             return no_content_response()
 
         client = make_async_integration_client(base_url, handler)
-        await client.delete_webhook_async("user_token_123", "wh_123")
+        await client.delete_webhook_async("user_assertion_123", "wh_123")
 
 
 class TestClientLifecycle:
@@ -354,7 +358,7 @@ class TestClientLifecycle:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         with make_integration_client(base_url, handler) as client:
-            result = client.bootstrap_api_key("user_token")
+            result = client.bootstrap_api_key("user_assertion")
             assert result.api_key == "bvm_test_bootstrapped_key_12345"
 
     @pytest.mark.asyncio
@@ -366,7 +370,7 @@ class TestClientLifecycle:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         async with make_async_integration_client(base_url, handler) as client:
-            result = await client.bootstrap_api_key_async("user_token")
+            result = await client.bootstrap_api_key_async("user_assertion")
             assert result.api_key == "bvm_test_bootstrapped_key_12345"
 
     def test_close(self) -> None:
@@ -377,7 +381,7 @@ class TestClientLifecycle:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_integration_client(base_url, handler)
-        client.bootstrap_api_key("user_token")
+        client.bootstrap_api_key("user_assertion")
         client.close()
 
     @pytest.mark.asyncio
@@ -389,7 +393,7 @@ class TestClientLifecycle:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_async_integration_client(base_url, handler)
-        await client.bootstrap_api_key_async("user_token")
+        await client.bootstrap_api_key_async("user_assertion")
         await client.aclose()
 
 
@@ -407,7 +411,7 @@ class TestHMACHeaders:
             return json_response(SAMPLE_BOOTSTRAP_RESPONSE)
 
         client = make_integration_client(base_url, handler)
-        client.bootstrap_api_key("user_token")
+        client.bootstrap_api_key("user_assertion")
 
         assert captured_headers["X-Timestamp"] != ""
         assert captured_headers["X-Signature"] != ""

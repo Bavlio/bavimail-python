@@ -233,6 +233,8 @@ def test_inbound_email_detail_from_dict() -> None:
         "provider_message_id": "inb-1",
         "raw_email_uri": "s3://bucket/key",
         "user_id": "u1",
+        "cc_emails": [{"email": "copy@example.com", "name": "Copy"}],
+        "headers": [{"name": "Subject", "value": "Hi"}],
         "body_text": "Hello",
         "spam_verdict": {"status": "PASS"},
         "dkim_verdict": {"status": "PASS", "details": "selector1"},
@@ -250,6 +252,10 @@ def test_inbound_email_detail_from_dict() -> None:
     assert detail.spam_verdict.status == "PASS"
     assert detail.attachments is not None
     assert len(detail.attachments) == 1
+    assert detail.cc_emails is not None
+    assert detail.cc_emails[0].email == "copy@example.com"
+    assert detail.headers is not None
+    assert detail.headers[0].name == "Subject"
 
 
 def test_verdict_from_dict_none() -> None:

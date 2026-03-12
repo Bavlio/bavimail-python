@@ -33,7 +33,7 @@ class IntegrationClient:
         )
 
         # Bootstrap API key for a user
-        result = client.bootstrap_api_key("user_external_token")
+        result = client.bootstrap_api_key("user_assertion_jwt")
         print(f"API Key: {result.api_key}")
 
     Args:
@@ -215,24 +215,24 @@ class IntegrationClient:
 
     def bootstrap_api_key(
         self,
-        external_token: str,
+        user_assertion: str,
         *,
         label: str | None = None,
     ) -> BootstrapApiKeyResponse:
         """Bootstrap an API key for a user.
 
-        Creates a new API key for the user identified by the external token,
+        Creates a new API key for the user identified by the signed user assertion,
         or returns an existing key if one already exists.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             label: Optional label for the API key.
 
         Returns:
             Bootstrap response containing the API key.
         """
         path = f"/integrations/{self._integration_id}/api-keys/bootstrap"
-        payload: dict[str, Any] = {"external_token": external_token}
+        payload: dict[str, Any] = {"user_assertion": user_assertion}
         if label is not None:
             payload["label"] = label
         data = self._request("POST", path, json=payload)
@@ -240,54 +240,54 @@ class IntegrationClient:
 
     async def bootstrap_api_key_async(
         self,
-        external_token: str,
+        user_assertion: str,
         *,
         label: str | None = None,
     ) -> BootstrapApiKeyResponse:
         """Bootstrap an API key for a user (async).
 
-        Creates a new API key for the user identified by the external token,
+        Creates a new API key for the user identified by the signed user assertion,
         or returns an existing key if one already exists.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             label: Optional label for the API key.
 
         Returns:
             Bootstrap response containing the API key.
         """
         path = f"/integrations/{self._integration_id}/api-keys/bootstrap"
-        payload: dict[str, Any] = {"external_token": external_token}
+        payload: dict[str, Any] = {"user_assertion": user_assertion}
         if label is not None:
             payload["label"] = label
         data = await self._request_async("POST", path, json=payload)
         return BootstrapApiKeyResponse.from_dict(data)
 
-    def revoke_api_key(self, external_token: str) -> RevokeApiKeyResponse:
+    def revoke_api_key(self, user_assertion: str) -> RevokeApiKeyResponse:
         """Revoke an API key for a user.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
 
         Returns:
             Revoke response indicating success.
         """
         path = f"/integrations/{self._integration_id}/api-key"
-        payload = {"external_token": external_token}
+        payload = {"user_assertion": user_assertion}
         data = self._request("DELETE", path, json=payload)
         return RevokeApiKeyResponse.from_dict(data)
 
-    async def revoke_api_key_async(self, external_token: str) -> RevokeApiKeyResponse:
+    async def revoke_api_key_async(self, user_assertion: str) -> RevokeApiKeyResponse:
         """Revoke an API key for a user (async).
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
 
         Returns:
             Revoke response indicating success.
         """
         path = f"/integrations/{self._integration_id}/api-key"
-        payload = {"external_token": external_token}
+        payload = {"user_assertion": user_assertion}
         data = await self._request_async("DELETE", path, json=payload)
         return RevokeApiKeyResponse.from_dict(data)
 
@@ -295,7 +295,7 @@ class IntegrationClient:
 
     def create_webhook(
         self,
-        external_token: str,
+        user_assertion: str,
         url: str,
         event_types: list[str],
         *,
@@ -305,7 +305,7 @@ class IntegrationClient:
         """Create a webhook for a user.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             url: HTTPS URL where webhook events will be delivered.
             event_types: List of event types to subscribe to.
             description: Optional description for the webhook.
@@ -318,7 +318,7 @@ class IntegrationClient:
         """
         path = f"/integrations/{self._integration_id}/webhooks"
         payload: dict[str, Any] = {
-            "external_token": external_token,
+            "user_assertion": user_assertion,
             "url": url,
             "event_types": event_types,
         }
@@ -331,7 +331,7 @@ class IntegrationClient:
 
     async def create_webhook_async(
         self,
-        external_token: str,
+        user_assertion: str,
         url: str,
         event_types: list[str],
         *,
@@ -341,7 +341,7 @@ class IntegrationClient:
         """Create a webhook for a user (async).
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             url: HTTPS URL where webhook events will be delivered.
             event_types: List of event types to subscribe to.
             description: Optional description for the webhook.
@@ -354,7 +354,7 @@ class IntegrationClient:
         """
         path = f"/integrations/{self._integration_id}/webhooks"
         payload: dict[str, Any] = {
-            "external_token": external_token,
+            "user_assertion": user_assertion,
             "url": url,
             "event_types": event_types,
         }
@@ -365,56 +365,54 @@ class IntegrationClient:
         data = await self._request_async("POST", path, json=payload)
         return WebhookCreated.from_dict(data)
 
-    def list_webhooks(self, external_token: str) -> list[Webhook]:
+    def list_webhooks(self, user_assertion: str) -> list[Webhook]:
         """List webhooks for a user.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
 
         Returns:
             List of webhooks for the user.
         """
         path = f"/integrations/{self._integration_id}/webhooks"
-        params = {"external_token": external_token}
+        params = {"user_assertion": user_assertion}
         data = self._request("GET", path, params=params)
         return [Webhook.from_dict(item) for item in data]
 
-    async def list_webhooks_async(self, external_token: str) -> list[Webhook]:
+    async def list_webhooks_async(self, user_assertion: str) -> list[Webhook]:
         """List webhooks for a user (async).
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
 
         Returns:
             List of webhooks for the user.
         """
         path = f"/integrations/{self._integration_id}/webhooks"
-        params = {"external_token": external_token}
+        params = {"user_assertion": user_assertion}
         data = await self._request_async("GET", path, params=params)
         return [Webhook.from_dict(item) for item in data]
 
-    def delete_webhook(self, external_token: str, webhook_id: str) -> None:
+    def delete_webhook(self, user_assertion: str, webhook_id: str) -> None:
         """Delete a webhook.
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             webhook_id: ID of the webhook to delete.
         """
         path = f"/integrations/{self._integration_id}/webhooks/{webhook_id}"
-        payload = {"external_token": external_token}
+        payload = {"user_assertion": user_assertion}
         self._request("DELETE", path, json=payload)
 
-    async def delete_webhook_async(
-        self, external_token: str, webhook_id: str
-    ) -> None:
+    async def delete_webhook_async(self, user_assertion: str, webhook_id: str) -> None:
         """Delete a webhook (async).
 
         Args:
-            external_token: External token identifying the user.
+            user_assertion: Signed JWT assertion identifying the user.
             webhook_id: ID of the webhook to delete.
         """
         path = f"/integrations/{self._integration_id}/webhooks/{webhook_id}"
-        payload = {"external_token": external_token}
+        payload = {"user_assertion": user_assertion}
         await self._request_async("DELETE", path, json=payload)
 
     # -- Lifecycle -------------------------------------------------------------

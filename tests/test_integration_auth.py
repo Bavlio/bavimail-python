@@ -19,7 +19,7 @@ class TestHMACAuth:
     def test_build_canonical_string(self) -> None:
         """Test canonical string construction."""
         auth = HMACAuth("int_123", "abcd1234abcd1234abcd1234abcd1234")
-        body = b'{"external_token": "user_token"}'
+        body = b'{"user_assertion": "user_token"}'
         timestamp = "1700000000"
 
         canonical = auth.build_canonical_string(
@@ -58,7 +58,7 @@ class TestHMACAuth:
 
         canonical = auth.build_canonical_string(
             method="GET",
-            path="/integrations/int_123/webhooks?external_token=user_token",
+            path="/integrations/int_123/webhooks?user_assertion=user_token",
             timestamp=timestamp,
             body=b"",
         )
@@ -66,7 +66,7 @@ class TestHMACAuth:
         empty_sha256 = hashlib.sha256(b"").hexdigest()
         expected = (
             f"GET\n"
-            f"/integrations/int_123/webhooks?external_token=user_token\n"
+            f"/integrations/int_123/webhooks?user_assertion=user_token\n"
             f"{timestamp}\n"
             f"{empty_sha256}"
         )
@@ -109,7 +109,7 @@ class TestHMACAuth:
         secret_hex = "abcd1234abcd1234abcd1234abcd1234"
         auth = HMACAuth("int_123", secret_hex)
 
-        body = b'{"external_token": "user_token"}'
+        body = b'{"user_assertion": "user_token"}'
         request = httpx.Request(
             "POST",
             "https://api.bavimail.com/integrations/int_123/api-keys/bootstrap",
@@ -144,7 +144,7 @@ class TestHMACAuth:
         request = httpx.Request(
             "GET",
             "https://api.bavimail.com/integrations/int_123/webhooks",
-            params={"external_token": "user_token"},
+            params={"user_assertion": "user_token"},
         )
 
         flow = auth.auth_flow(request)

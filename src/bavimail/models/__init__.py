@@ -26,9 +26,11 @@ from .email import (
     TrackedLink,
 )
 from .inbound_email import (
+    InboundHeader,
     InboundAttachmentMetadata,
     InboundEmailDetail,
     InboundEmailSummary,
+    InboundRecipient,
     Verdict,
 )
 from .integration import (
@@ -62,8 +64,10 @@ __all__ = [
     "EmailClick",
     "EmailTag",
     "InboundAttachmentMetadata",
+    "InboundHeader",
     "InboundEmailDetail",
     "InboundEmailSummary",
+    "InboundRecipient",
     "IntegrationInfo",
     "MailFromStatusInfo",
     "RevokeApiKeyResponse",

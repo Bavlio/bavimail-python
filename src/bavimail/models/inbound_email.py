@@ -48,10 +48,10 @@ class TagSummaryEmbed:
 class InboundAttachmentMetadata:
     """Attachment metadata from an inbound email."""
 
-    id: str | None = None
     size_bytes: int
     mime_type: str
     is_inline: bool
+    id: str | None = None
     filename: str | None = None
     sha256: str | None = None
     content_id: str | None = None
@@ -66,6 +66,36 @@ class InboundAttachmentMetadata:
             filename=data.get("filename"),
             sha256=data.get("sha256"),
             content_id=data.get("content_id"),
+        )
+
+
+@dataclass(frozen=True)
+class InboundRecipient:
+    """Structured recipient metadata from an inbound email."""
+
+    email: str
+    name: str | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> InboundRecipient:
+        return cls(
+            email=data["email"],
+            name=data.get("name"),
+        )
+
+
+@dataclass(frozen=True)
+class InboundHeader:
+    """Structured header metadata from an inbound email."""
+
+    name: str
+    value: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> InboundHeader:
+        return cls(
+            name=data["name"],
+            value=data["value"],
         )
 
 
@@ -92,7 +122,6 @@ class InboundEmailSummary:
         conversation_id: ID of the conversation this email belongs to.
         from_name: Display name of the sender.
         provider_received_at: When the provider received the email.
-        processed_at: When the email was fully processed.
         processing_error: Error message if processing failed.
         provider_metadata: Provider-specific metadata.
         tags: Tags applied to this email.
@@ -116,7 +145,6 @@ class InboundEmailSummary:
     conversation_id: str | None = None
     from_name: str | None = None
     provider_received_at: datetime | None = None
-    processed_at: datetime | None = None
     processing_error: str | None = None
     provider_metadata: dict[str, Any] | None = field(default=None)
     tags: list[TagSummaryEmbed] | None = field(default=None)
@@ -144,7 +172,6 @@ class InboundEmailSummary:
             conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             from_name=data.get("from_name"),
             provider_received_at=_parse_datetime(data.get("provider_received_at")),
-            processed_at=_parse_datetime(data.get("processed_at")),
             processing_error=data.get("processing_error"),
             provider_metadata=data.get("provider_metadata"),
             tags=tags,
@@ -175,12 +202,12 @@ class InboundEmailDetail:
         conversation_id: ID of the conversation this email belongs to.
         from_name: Display name of the sender.
         reply_to: Reply-To header address.
-        cc_emails: List of CC recipient addresses.
-        bcc_emails: List of BCC recipient addresses.
+        cc_emails: List of CC recipient objects.
+        bcc_emails: List of BCC recipient objects.
         body_text: Plain text email body.
         body_html: HTML email body.
         raw_email_size: Size of the raw email in bytes.
-        headers: Parsed email headers.
+        headers: Parsed email headers as name/value objects.
         message_id: RFC 5322 Message-ID header.
         in_reply_to: Message-ID of the email being replied to.
         references: List of Message-IDs for threading.
@@ -191,7 +218,6 @@ class InboundEmailDetail:
         spf_verdict: SPF authentication result.
         dkim_verdict: DKIM authentication result.
         dmarc_verdict: DMARC policy evaluation result.
-        processed_at: When the email was fully processed.
         processing_error: Error message if processing failed.
         provider_metadata: Provider-specific metadata.
         tags: Tags applied to this email.
@@ -216,12 +242,12 @@ class InboundEmailDetail:
     conversation_id: str | None = None
     from_name: str | None = None
     reply_to: str | None = None
-    cc_emails: list[str] | None = None
-    bcc_emails: list[str] | None = None
+    cc_emails: list[InboundRecipient] | None = None
+    bcc_emails: list[InboundRecipient] | None = None
     body_text: str | None = None
     body_html: str | None = None
     raw_email_size: int | None = None
-    headers: dict[str, str] | None = None
+    headers: list[InboundHeader] | None = None
     message_id: str | None = None
     in_reply_to: str | None = None
     thread_references: list[str] | None = None
@@ -232,7 +258,6 @@ class InboundEmailDetail:
     spf_verdict: Verdict | None = None
     dkim_verdict: Verdict | None = None
     dmarc_verdict: Verdict | None = None
-    processed_at: datetime | None = None
     processing_error: str | None = None
     provider_metadata: dict[str, Any] | None = field(default=None)
     tags: list[TagSummaryEmbed] | None = field(default=None)
@@ -245,6 +270,12 @@ class InboundEmailDetail:
             if attachments_raw
             else None
         )
+        cc_raw = data.get("cc_emails")
+        cc_emails = [InboundRecipient.from_dict(item) for item in cc_raw] if cc_raw else None
+        bcc_raw = data.get("bcc_emails")
+        bcc_emails = [InboundRecipient.from_dict(item) for item in bcc_raw] if bcc_raw else None
+        headers_raw = data.get("headers")
+        headers = [InboundHeader.from_dict(item) for item in headers_raw] if headers_raw else None
         tags_raw = data.get("tags")
         tags = [TagSummaryEmbed.from_dict(t) for t in tags_raw] if tags_raw else None
         return cls(
@@ -267,12 +298,12 @@ class InboundEmailDetail:
             conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             from_name=data.get("from_name"),
             reply_to=data.get("reply_to"),
-            cc_emails=data.get("cc_emails"),
-            bcc_emails=data.get("bcc_emails"),
+            cc_emails=cc_emails,
+            bcc_emails=bcc_emails,
             body_text=data.get("body_text"),
             body_html=data.get("body_html"),
             raw_email_size=data.get("raw_email_size"),
-            headers=data.get("headers"),
+            headers=headers,
             message_id=data.get("message_id"),
             in_reply_to=data.get("in_reply_to"),
             thread_references=data.get("thread_references"),
@@ -283,7 +314,6 @@ class InboundEmailDetail:
             spf_verdict=Verdict.from_dict(data.get("spf_verdict")),
             dkim_verdict=Verdict.from_dict(data.get("dkim_verdict")),
             dmarc_verdict=Verdict.from_dict(data.get("dmarc_verdict")),
-            processed_at=_parse_datetime(data.get("processed_at")),
             processing_error=data.get("processing_error"),
             provider_metadata=data.get("provider_metadata"),
             tags=tags,

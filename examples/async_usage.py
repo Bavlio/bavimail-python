@@ -7,8 +7,7 @@ from bavimail import Bavimail, iter_pages_async
 
 async def main() -> None:
     async with Bavimail(
-        api_key="bvm_your_api_key_here",
-        base_url="https://mail.yourdomain.com",
+        api_key="YOUR_API_KEY",
     ) as client:
         # List domains
         domains = await client.domains.list_async()

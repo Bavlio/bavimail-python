@@ -16,8 +16,7 @@ pip install bavimail
 from bavimail import Bavimail
 
 client = Bavimail(
-    api_key="bvm_your_api_key",
-    base_url="https://mail.yourdomain.com",
+    api_key="YOUR_API_KEY",
 )
 
 # List domains
@@ -47,8 +46,7 @@ from bavimail import Bavimail
 
 async def main():
     async with Bavimail(
-        api_key="bvm_your_api_key",
-        base_url="https://mail.yourdomain.com",
+        api_key="YOUR_API_KEY",
     ) as client:
         domains = await client.domains.list_async()
         email = await client.emails.send_async(
@@ -254,8 +252,7 @@ custom = httpx.Client(
 )
 
 client = Bavimail(
-    api_key="bvm_...",
-    base_url="https://mail.yourdomain.com",
+    api_key="YOUR_API_KEY",
     http_client=custom,
 )
 ```

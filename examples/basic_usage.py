@@ -4,8 +4,7 @@ from bavimail import Bavimail, NotFoundError, iter_pages
 
 # Initialize the client
 client = Bavimail(
-    api_key="bvm_your_api_key_here",
-    base_url="https://mail.yourdomain.com",
+    api_key="YOUR_API_KEY",
 )
 
 # --- Domains ---

@@ -9,7 +9,7 @@ Demonstrates four usage modes:
 
 from bavimail import Bavimail, EventType, WebhookEvent
 
-client = Bavimail(api_key="bvm_your_api_key_here")
+client = Bavimail(api_key="YOUR_API_KEY")
 
 
 # Register handlers using the @client.on() decorator

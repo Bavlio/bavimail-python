@@ -32,12 +32,12 @@ class Bavimail:
 
     Example (sync)::
 
-        client = Bavimail(api_key="bvm_...")
+        client = Bavimail(api_key="YOUR_API_KEY")
         domains = client.domains.list()
 
     Example (async)::
 
-        async with Bavimail(api_key="bvm_...") as client:
+        async with Bavimail(api_key="YOUR_API_KEY") as client:
             domains = await client.domains.list_async()
 
     Args:

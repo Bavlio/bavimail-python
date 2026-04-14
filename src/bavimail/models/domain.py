@@ -167,6 +167,8 @@ class Domain:
         last_verification_attempt: When verification was last attempted.
         verification_error: Error message from the last failed verification.
         strip_tracking_on_read: Whether to remove tracking pixels when reading emails.
+        extra_retained_headers: Additional heavy headers retained beyond the default set.
+        retained_headers: Effective stored header patterns for inbound emails.
     """
 
     id: str
@@ -186,6 +188,8 @@ class Domain:
     last_verification_attempt: datetime | None = None
     verification_error: str | None = None
     strip_tracking_on_read: bool = False
+    extra_retained_headers: list[str] | None = None
+    retained_headers: list[str] | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Domain:
@@ -204,9 +208,9 @@ class Domain:
             ses_mail_from_status=data.get("ses_mail_from_status"),
             ses_mail_from_error=data.get("ses_mail_from_error"),
             verified_at=_parse_datetime(data.get("verified_at")),
-            last_verification_attempt=_parse_datetime(
-                data.get("last_verification_attempt")
-            ),
+            last_verification_attempt=_parse_datetime(data.get("last_verification_attempt")),
             verification_error=data.get("verification_error"),
             strip_tracking_on_read=data.get("strip_tracking_on_read", False),
+            extra_retained_headers=data.get("extra_retained_headers"),
+            retained_headers=data.get("retained_headers"),
         )

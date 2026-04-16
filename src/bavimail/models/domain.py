@@ -152,19 +152,12 @@ class Domain:
     Attributes:
         id: Unique identifier for the domain.
         domain: Domain name (e.g., "example.com").
-        status: Verification status: "pending", "verifying", "verified", or "failed".
-        provider_key: Email provider identifier (e.g., "AWS" for Amazon SES).
-        user_id: ID of the user who owns this domain.
+        status: Verification status: "provisioning", "pending", "verifying",
+            "verified", or "failed".
         created_at: When the domain was created.
         updated_at: When the domain was last updated.
-        provider_config: Provider-specific configuration options.
-        ses_verification_token: SES domain verification token.
-        ses_dkim_tokens: SES DKIM signing tokens for email authentication.
-        ses_mail_from_domain: Custom MAIL FROM domain for SES.
-        ses_mail_from_status: MAIL FROM domain verification status.
-        ses_mail_from_error: Error message if MAIL FROM setup failed.
+        inbound_enabled: Whether inbound email is enabled for this domain.
         verified_at: When the domain was successfully verified.
-        last_verification_attempt: When verification was last attempted.
         verification_error: Error message from the last failed verification.
         strip_tracking_on_read: Whether to remove tracking pixels when reading emails.
         extra_retained_headers: Additional heavy headers retained beyond the default set.
@@ -174,18 +167,10 @@ class Domain:
     id: str
     domain: str
     status: str
-    provider_key: str
-    user_id: str
     created_at: datetime | None = None
     updated_at: datetime | None = None
-    provider_config: dict[str, Any] | None = None
-    ses_verification_token: str | None = None
-    ses_dkim_tokens: list[str] | None = None
-    ses_mail_from_domain: str | None = None
-    ses_mail_from_status: str | None = None
-    ses_mail_from_error: str | None = None
+    inbound_enabled: bool = True
     verified_at: datetime | None = None
-    last_verification_attempt: datetime | None = None
     verification_error: str | None = None
     strip_tracking_on_read: bool = False
     extra_retained_headers: list[str] | None = None
@@ -197,18 +182,10 @@ class Domain:
             id=str(data["id"]),
             domain=data["domain"],
             status=data["status"],
-            provider_key=data["provider_key"],
-            user_id=str(data["user_id"]),
             created_at=_parse_datetime(data.get("created_at")),
             updated_at=_parse_datetime(data.get("updated_at")),
-            provider_config=data.get("provider_config"),
-            ses_verification_token=data.get("ses_verification_token"),
-            ses_dkim_tokens=data.get("ses_dkim_tokens"),
-            ses_mail_from_domain=data.get("ses_mail_from_domain"),
-            ses_mail_from_status=data.get("ses_mail_from_status"),
-            ses_mail_from_error=data.get("ses_mail_from_error"),
+            inbound_enabled=data.get("inbound_enabled", True),
             verified_at=_parse_datetime(data.get("verified_at")),
-            last_verification_attempt=_parse_datetime(data.get("last_verification_attempt")),
             verification_error=data.get("verification_error"),
             strip_tracking_on_read=data.get("strip_tracking_on_read", False),
             extra_retained_headers=data.get("extra_retained_headers"),

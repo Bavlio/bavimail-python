@@ -24,9 +24,14 @@ class Domains(BaseResource):
         provider_key: str,
         *,
         provider_config: dict[str, Any] | None = None,
+        inbound_enabled: bool = True,
     ) -> Domain:
         """Create a new domain."""
-        body: dict[str, Any] = {"domain": domain, "provider_key": provider_key}
+        body: dict[str, Any] = {
+            "domain": domain,
+            "provider_key": provider_key,
+            "inbound_enabled": inbound_enabled,
+        }
         if provider_config is not None:
             body["provider_config"] = provider_config
         data = self._http.request("POST", "/domains", json=body)
@@ -38,9 +43,14 @@ class Domains(BaseResource):
         provider_key: str,
         *,
         provider_config: dict[str, Any] | None = None,
+        inbound_enabled: bool = True,
     ) -> Domain:
         """Create a new domain (async)."""
-        body: dict[str, Any] = {"domain": domain, "provider_key": provider_key}
+        body: dict[str, Any] = {
+            "domain": domain,
+            "provider_key": provider_key,
+            "inbound_enabled": inbound_enabled,
+        }
         if provider_config is not None:
             body["provider_config"] = provider_config
         data = await self._http.request_async("POST", "/domains", json=body)
@@ -116,6 +126,7 @@ class Domains(BaseResource):
         *,
         is_active: bool | _UnsetType = UNSET,
         provider_config: dict[str, Any] | _UnsetType = UNSET,
+        inbound_enabled: bool | _UnsetType = UNSET,
         strip_tracking_on_read: bool | _UnsetType = UNSET,
         extra_retained_headers: _List[str] | _UnsetType = UNSET,
     ) -> Domain:
@@ -125,6 +136,8 @@ class Domains(BaseResource):
             body["is_active"] = is_active
         if provider_config is not UNSET:
             body["provider_config"] = provider_config
+        if inbound_enabled is not UNSET:
+            body["inbound_enabled"] = inbound_enabled
         if strip_tracking_on_read is not UNSET:
             body["strip_tracking_on_read"] = strip_tracking_on_read
         if extra_retained_headers is not UNSET:
@@ -138,6 +151,7 @@ class Domains(BaseResource):
         *,
         is_active: bool | _UnsetType = UNSET,
         provider_config: dict[str, Any] | _UnsetType = UNSET,
+        inbound_enabled: bool | _UnsetType = UNSET,
         strip_tracking_on_read: bool | _UnsetType = UNSET,
         extra_retained_headers: _List[str] | _UnsetType = UNSET,
     ) -> Domain:
@@ -147,6 +161,8 @@ class Domains(BaseResource):
             body["is_active"] = is_active
         if provider_config is not UNSET:
             body["provider_config"] = provider_config
+        if inbound_enabled is not UNSET:
+            body["inbound_enabled"] = inbound_enabled
         if strip_tracking_on_read is not UNSET:
             body["strip_tracking_on_read"] = strip_tracking_on_read
         if extra_retained_headers is not UNSET:

@@ -58,12 +58,10 @@ SAMPLE_DOMAIN: dict[str, Any] = {
     "id": "d1000000-0000-0000-0000-000000000001",
     "domain": "example.com",
     "status": "verified",
-    "is_active": True,
-    "provider_key": "AWS",
-    "user_id": "u1000000-0000-0000-0000-000000000001",
+    "inbound_enabled": True,
+    "strip_tracking_on_read": False,
     "created_at": "2025-01-01T00:00:00Z",
     "updated_at": "2025-01-01T00:00:00Z",
-    "strip_tracking_on_read": False,
 }
 
 SAMPLE_ALIAS: dict[str, Any] = {

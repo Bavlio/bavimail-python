@@ -21,6 +21,7 @@ def test_create_domain() -> None:
         body = request.content.decode()
         assert "example.com" in body
         assert "AWS" in body
+        assert "inbound_enabled" in body
         return json_response(SAMPLE_DOMAIN, status_code=200)
 
     client = make_client("https://test.com", "key", handler)
@@ -112,7 +113,7 @@ def test_verify_domain() -> None:
 
 
 def test_update_domain() -> None:
-    updated = {**SAMPLE_DOMAIN, "is_active": False}
+    updated = {**SAMPLE_DOMAIN, "inbound_enabled": False}
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "PUT"
@@ -121,8 +122,8 @@ def test_update_domain() -> None:
         return json_response(updated)
 
     client = make_client("https://test.com", "key", handler)
-    domain = client.domains.update(SAMPLE_DOMAIN["id"], is_active=False)
-    assert domain.is_active is False
+    domain = client.domains.update(SAMPLE_DOMAIN["id"], inbound_enabled=False)
+    assert domain.inbound_enabled is False
     client.close()
 
 
@@ -147,6 +148,7 @@ async def test_create_domain_async() -> None:
         body = request.content.decode()
         assert "example.com" in body
         assert "AWS" in body
+        assert "inbound_enabled" in body
         return json_response(SAMPLE_DOMAIN, status_code=200)
 
     client = make_async_client("https://test.com", "key", handler)
@@ -244,7 +246,7 @@ async def test_verify_domain_async() -> None:
 
 @pytest.mark.asyncio
 async def test_update_domain_async() -> None:
-    updated = {**SAMPLE_DOMAIN, "is_active": False}
+    updated = {**SAMPLE_DOMAIN, "inbound_enabled": False}
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "PUT"
@@ -253,8 +255,8 @@ async def test_update_domain_async() -> None:
         return json_response(updated)
 
     client = make_async_client("https://test.com", "key", handler)
-    domain = await client.domains.update_async(SAMPLE_DOMAIN["id"], is_active=False)
-    assert domain.is_active is False
+    domain = await client.domains.update_async(SAMPLE_DOMAIN["id"], inbound_enabled=False)
+    assert domain.inbound_enabled is False
     await client.aclose()
 
 

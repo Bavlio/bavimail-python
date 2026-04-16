@@ -65,7 +65,7 @@ asyncio.run(main())
 
 ```python
 # Create a domain
-domain = client.domains.create("example.com", "AWS")
+domain = client.domains.create("example.com", "AWS", inbound_enabled=False)
 
 # Get setup instructions (DNS records)
 setup = client.domains.get_setup(domain.id)
@@ -80,7 +80,7 @@ print(f"Verified: {dns.overall_progress.verified}/{dns.overall_progress.total_re
 domain = client.domains.verify(domain.id)
 
 # Update domain settings
-domain = client.domains.update(domain.id, is_active=False)
+domain = client.domains.update(domain.id, inbound_enabled=True)
 
 # Delete
 client.domains.delete(domain.id)

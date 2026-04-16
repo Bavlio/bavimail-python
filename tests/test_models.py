@@ -34,9 +34,7 @@ def test_domain_from_dict() -> None:
         "id": "d1",
         "domain": "example.com",
         "status": "verified",
-        "is_active": True,
-        "provider_key": "AWS",
-        "user_id": "u1",
+        "inbound_enabled": True,
         "created_at": "2025-01-01T00:00:00Z",
         "updated_at": "2025-01-01T00:00:00Z",
     }
@@ -52,14 +50,13 @@ def test_domain_optional_fields_default_none() -> None:
         "id": "d1",
         "domain": "example.com",
         "status": "pending",
-        "is_active": True,
-        "provider_key": "AWS",
-        "user_id": "u1",
+        "inbound_enabled": True,
     }
     domain = Domain.from_dict(data)
     assert domain.verified_at is None
-    assert domain.ses_verification_token is None
+    assert domain.verification_error is None
     assert domain.strip_tracking_on_read is False
+    assert domain.extra_retained_headers is None
 
 
 def test_dns_record_from_dict() -> None:

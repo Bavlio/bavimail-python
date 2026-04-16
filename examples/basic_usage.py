@@ -14,7 +14,7 @@ for d in domains:
     print(f"{d.domain} ({d.status})")
 
 # Create a domain
-domain = client.domains.create("example.com", "AWS")
+domain = client.domains.create("example.com", "AWS", inbound_enabled=False)
 print(f"Created domain: {domain.id}")
 
 # Get setup instructions

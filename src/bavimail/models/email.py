@@ -74,6 +74,7 @@ class Email:
     domain_id: str
     from_email: str
     to_email: str
+    to_emails: list[str]
     subject: str
     body_text: str
     status: str
@@ -83,6 +84,8 @@ class Email:
     updated_at: datetime | None = None
     conversation_id: str | None = None
     body_html: str | None = None
+    cc_emails: list[str] | None = None
+    bcc_emails: list[str] | None = None
     in_reply_to: str | None = None
     thread_references: str | None = None
     attachments: list[AttachmentMetadata] | None = None
@@ -127,6 +130,7 @@ class Email:
             domain_id=str(data["domain_id"]),
             from_email=data["from_email"],
             to_email=data["to_email"],
+            to_emails=[str(email) for email in data.get("to_emails", [])],
             subject=data["subject"],
             body_text=data["body_text"],
             status=data["status"],
@@ -136,6 +140,14 @@ class Email:
             updated_at=_parse_datetime(data.get("updated_at")),
             conversation_id=(str(data["conversation_id"]) if data.get("conversation_id") else None),
             body_html=data.get("body_html"),
+            cc_emails=(
+                [str(email) for email in data["cc_emails"]]
+                if data.get("cc_emails")
+                else None
+            ),
+            bcc_emails=(
+                [str(email) for email in data["bcc_emails"]] if data.get("bcc_emails") else None
+            ),
             in_reply_to=data.get("in_reply_to"),
             thread_references=data.get("thread_references"),
             attachments=attachments,

@@ -20,11 +20,13 @@ class Aliases(BaseResource):
         alias: str,
         *,
         signature_html: str | None = None,
+        raw_mime_retention_enabled: bool = False,
     ) -> Alias:
         """Create a new alias on a domain."""
         body: dict[str, Any] = {"domain_id": domain_id, "alias": alias}
         if signature_html is not None:
             body["signature_html"] = signature_html
+        body["raw_mime_retention_enabled"] = raw_mime_retention_enabled
         data = self._http.request("POST", "/aliases", json=body)
         return Alias.from_dict(data)
 
@@ -34,11 +36,13 @@ class Aliases(BaseResource):
         alias: str,
         *,
         signature_html: str | None = None,
+        raw_mime_retention_enabled: bool = False,
     ) -> Alias:
         """Create a new alias on a domain (async)."""
         body: dict[str, Any] = {"domain_id": domain_id, "alias": alias}
         if signature_html is not None:
             body["signature_html"] = signature_html
+        body["raw_mime_retention_enabled"] = raw_mime_retention_enabled
         data = await self._http.request_async("POST", "/aliases", json=body)
         return Alias.from_dict(data)
 
@@ -74,6 +78,7 @@ class Aliases(BaseResource):
         *,
         alias: str | _UnsetType = UNSET,
         signature_html: str | None | _UnsetType = UNSET,
+        raw_mime_retention_enabled: bool | _UnsetType = UNSET,
     ) -> Alias:
         """Update an alias."""
         body: dict[str, Any] = {}
@@ -81,6 +86,8 @@ class Aliases(BaseResource):
             body["alias"] = alias
         if signature_html is not UNSET:
             body["signature_html"] = signature_html
+        if raw_mime_retention_enabled is not UNSET:
+            body["raw_mime_retention_enabled"] = raw_mime_retention_enabled
         data = self._http.request("PUT", f"/aliases/{alias_id}", json=body)
         return Alias.from_dict(data)
 
@@ -90,6 +97,7 @@ class Aliases(BaseResource):
         *,
         alias: str | _UnsetType = UNSET,
         signature_html: str | None | _UnsetType = UNSET,
+        raw_mime_retention_enabled: bool | _UnsetType = UNSET,
     ) -> Alias:
         """Update an alias (async)."""
         body: dict[str, Any] = {}
@@ -97,6 +105,8 @@ class Aliases(BaseResource):
             body["alias"] = alias
         if signature_html is not UNSET:
             body["signature_html"] = signature_html
+        if raw_mime_retention_enabled is not UNSET:
+            body["raw_mime_retention_enabled"] = raw_mime_retention_enabled
         data = await self._http.request_async("PUT", f"/aliases/{alias_id}", json=body)
         return Alias.from_dict(data)
 

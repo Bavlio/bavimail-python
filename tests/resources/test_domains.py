@@ -99,7 +99,13 @@ def test_get_dns_status() -> None:
 
 
 def test_verify_domain() -> None:
-    verified = {**SAMPLE_DOMAIN, "status": "verified"}
+    verified = {
+        "status": "verifying",
+        "verified_at": None,
+        "last_verification_attempt": "2026-01-01T00:00:00Z",
+        "verification_error": None,
+        "queued": True,
+    }
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "POST"
@@ -107,8 +113,9 @@ def test_verify_domain() -> None:
         return json_response(verified)
 
     client = make_client("https://test.com", "key", handler)
-    domain = client.domains.verify(SAMPLE_DOMAIN["id"])
-    assert domain.status == "verified"
+    response = client.domains.verify(SAMPLE_DOMAIN["id"])
+    assert response["status"] == "verifying"
+    assert response["queued"] is True
     client.close()
 
 
@@ -231,7 +238,13 @@ async def test_get_dns_status_async() -> None:
 
 @pytest.mark.asyncio
 async def test_verify_domain_async() -> None:
-    verified = {**SAMPLE_DOMAIN, "status": "verified"}
+    verified = {
+        "status": "verifying",
+        "verified_at": None,
+        "last_verification_attempt": "2026-01-01T00:00:00Z",
+        "verification_error": None,
+        "queued": True,
+    }
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.method == "POST"
@@ -239,8 +252,9 @@ async def test_verify_domain_async() -> None:
         return json_response(verified)
 
     client = make_async_client("https://test.com", "key", handler)
-    domain = await client.domains.verify_async(SAMPLE_DOMAIN["id"])
-    assert domain.status == "verified"
+    response = await client.domains.verify_async(SAMPLE_DOMAIN["id"])
+    assert response["status"] == "verifying"
+    assert response["queued"] is True
     await client.aclose()
 
 

@@ -24,6 +24,7 @@ class Alias:
     signature_html: str | None = None
     signature_text: str | None = None
     warmup_token: str | None = None
+    raw_mime_retention_enabled: bool = False
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Alias:
@@ -39,4 +40,5 @@ class Alias:
             signature_html=data.get("signature_html"),
             signature_text=data.get("signature_text"),
             warmup_token=data.get("warmup_token"),
+            raw_mime_retention_enabled=data.get("raw_mime_retention_enabled", False),
         )

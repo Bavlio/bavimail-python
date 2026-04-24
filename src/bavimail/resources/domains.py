@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from .._types import UNSET, _UnsetType
 from ..models.domain import (
@@ -25,6 +25,7 @@ class Domains(BaseResource):
         *,
         provider_config: dict[str, Any] | None = None,
         inbound_enabled: bool = True,
+        extra_retained_headers: _List[str] | None = None,
     ) -> Domain:
         """Create a new domain."""
         body: dict[str, Any] = {
@@ -34,6 +35,8 @@ class Domains(BaseResource):
         }
         if provider_config is not None:
             body["provider_config"] = provider_config
+        if extra_retained_headers is not None:
+            body["extra_retained_headers"] = extra_retained_headers
         data = self._http.request("POST", "/domains", json=body)
         return Domain.from_dict(data)
 
@@ -44,6 +47,7 @@ class Domains(BaseResource):
         *,
         provider_config: dict[str, Any] | None = None,
         inbound_enabled: bool = True,
+        extra_retained_headers: _List[str] | None = None,
     ) -> Domain:
         """Create a new domain (async)."""
         body: dict[str, Any] = {
@@ -53,6 +57,8 @@ class Domains(BaseResource):
         }
         if provider_config is not None:
             body["provider_config"] = provider_config
+        if extra_retained_headers is not None:
+            body["extra_retained_headers"] = extra_retained_headers
         data = await self._http.request_async("POST", "/domains", json=body)
         return Domain.from_dict(data)
 
@@ -108,23 +114,22 @@ class Domains(BaseResource):
         )
         return DNSVerificationResponse.from_dict(data)
 
-    def verify(self, domain_id: str, *, force: bool = False) -> Domain:
+    def verify(self, domain_id: str, *, force: bool = False) -> dict[str, Any]:
         """Trigger domain verification."""
         data = self._http.request("POST", f"/domains/{domain_id}/verify", json={"force": force})
-        return Domain.from_dict(data)
+        return cast(dict[str, Any], data)
 
-    async def verify_async(self, domain_id: str, *, force: bool = False) -> Domain:
+    async def verify_async(self, domain_id: str, *, force: bool = False) -> dict[str, Any]:
         """Trigger domain verification (async)."""
         data = await self._http.request_async(
             "POST", f"/domains/{domain_id}/verify", json={"force": force}
         )
-        return Domain.from_dict(data)
+        return cast(dict[str, Any], data)
 
     def update(
         self,
         domain_id: str,
         *,
-        is_active: bool | _UnsetType = UNSET,
         provider_config: dict[str, Any] | _UnsetType = UNSET,
         inbound_enabled: bool | _UnsetType = UNSET,
         strip_tracking_on_read: bool | _UnsetType = UNSET,
@@ -132,8 +137,6 @@ class Domains(BaseResource):
     ) -> Domain:
         """Update a domain."""
         body: dict[str, Any] = {}
-        if is_active is not UNSET:
-            body["is_active"] = is_active
         if provider_config is not UNSET:
             body["provider_config"] = provider_config
         if inbound_enabled is not UNSET:
@@ -149,7 +152,6 @@ class Domains(BaseResource):
         self,
         domain_id: str,
         *,
-        is_active: bool | _UnsetType = UNSET,
         provider_config: dict[str, Any] | _UnsetType = UNSET,
         inbound_enabled: bool | _UnsetType = UNSET,
         strip_tracking_on_read: bool | _UnsetType = UNSET,
@@ -157,8 +159,6 @@ class Domains(BaseResource):
     ) -> Domain:
         """Update a domain (async)."""
         body: dict[str, Any] = {}
-        if is_active is not UNSET:
-            body["is_active"] = is_active
         if provider_config is not UNSET:
             body["provider_config"] = provider_config
         if inbound_enabled is not UNSET:

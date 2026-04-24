@@ -8,7 +8,6 @@ from ..models.email import (
     BatchEmailResponse,
     Email,
     EmailClick,
-    EmailEvent,
     EmailEventsResponse,
     EmailValidationResponse,
     TrackedLink,
@@ -153,7 +152,7 @@ class Emails(BaseResource):
 
     def batch_send(self, emails: _List[dict[str, Any]]) -> BatchEmailResponse:
         """Send a batch of emails."""
-        data = self._http.request("POST", "/emails/batch", json=emails)
+        data = self._http.request("POST", "/emails/batch", json={"emails": emails})
         return BatchEmailResponse.from_dict(data)
 
     async def batch_send_async(
@@ -161,7 +160,7 @@ class Emails(BaseResource):
     ) -> BatchEmailResponse:
         """Send a batch of emails (async)."""
         data = await self._http.request_async(
-            "POST", "/emails/batch", json=emails
+            "POST", "/emails/batch", json={"emails": emails}
         )
         return BatchEmailResponse.from_dict(data)
 
@@ -228,14 +227,14 @@ class Emails(BaseResource):
     def list_links(self, email_id: str) -> _List[TrackedLink]:
         """List tracked links for an email."""
         data = self._http.request("GET", f"/emails/{email_id}/links")
-        return [TrackedLink.from_dict(l) for l in data]
+        return [TrackedLink.from_dict(link) for link in data]
 
     async def list_links_async(self, email_id: str) -> _List[TrackedLink]:
         """List tracked links for an email (async)."""
         data = await self._http.request_async(
             "GET", f"/emails/{email_id}/links"
         )
-        return [TrackedLink.from_dict(l) for l in data]
+        return [TrackedLink.from_dict(link) for link in data]
 
     def list_events(
         self,

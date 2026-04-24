@@ -18,6 +18,8 @@ class InboundEmails(BaseResource):
         self,
         *,
         alias_id: str | None = None,
+        domain_id: str | None = None,
+        conversation_id: str | None = None,
         tag_ids: _List[str] | None = None,
         tag_match: str | None = None,
         include_warmup: bool | None = None,
@@ -28,6 +30,10 @@ class InboundEmails(BaseResource):
         params: dict[str, Any] = {}
         if alias_id is not None:
             params["alias_id"] = alias_id
+        if domain_id is not None:
+            params["domain_id"] = domain_id
+        if conversation_id is not None:
+            params["conversation_id"] = conversation_id
         if tag_ids is not None:
             params["tag_ids"] = ",".join(tag_ids)
         if tag_match is not None:
@@ -45,6 +51,8 @@ class InboundEmails(BaseResource):
         self,
         *,
         alias_id: str | None = None,
+        domain_id: str | None = None,
+        conversation_id: str | None = None,
         tag_ids: _List[str] | None = None,
         tag_match: str | None = None,
         include_warmup: bool | None = None,
@@ -55,6 +63,10 @@ class InboundEmails(BaseResource):
         params: dict[str, Any] = {}
         if alias_id is not None:
             params["alias_id"] = alias_id
+        if domain_id is not None:
+            params["domain_id"] = domain_id
+        if conversation_id is not None:
+            params["conversation_id"] = conversation_id
         if tag_ids is not None:
             params["tag_ids"] = ",".join(tag_ids)
         if tag_match is not None:
@@ -65,9 +77,7 @@ class InboundEmails(BaseResource):
             params["limit"] = limit
         if offset is not None:
             params["offset"] = offset
-        data = await self._http.request_async(
-            "GET", "/inbound-emails", params=params or None
-        )
+        data = await self._http.request_async("GET", "/inbound-emails", params=params or None)
         return [InboundEmailSummary.from_dict(e) for e in data]
 
     def get(self, email_id: str) -> InboundEmailDetail:
@@ -86,9 +96,7 @@ class InboundEmails(BaseResource):
 
     async def download_raw_async(self, email_id: str) -> bytes:
         """Download raw RFC822 email bytes (async)."""
-        return await self._http.request_bytes_async(
-            "GET", f"/inbound-emails/{email_id}/raw"
-        )
+        return await self._http.request_bytes_async("GET", f"/inbound-emails/{email_id}/raw")
 
     def download_attachment(self, email_id: str, attachment_id: str) -> bytes:
         """Download an attachment by attachment file ID."""
@@ -101,6 +109,22 @@ class InboundEmails(BaseResource):
         return await self._http.request_bytes_async(
             "GET", f"/inbound-emails/{email_id}/attachments/{attachment_id}"
         )
+
+    def mark_read(self, email_id: str) -> None:
+        """Mark an inbound email as read."""
+        self._http.request("POST", f"/inbound-emails/{email_id}/mark-read")
+
+    async def mark_read_async(self, email_id: str) -> None:
+        """Mark an inbound email as read (async)."""
+        await self._http.request_async("POST", f"/inbound-emails/{email_id}/mark-read")
+
+    def mark_unread(self, email_id: str) -> None:
+        """Mark an inbound email as unread."""
+        self._http.request("POST", f"/inbound-emails/{email_id}/mark-unread")
+
+    async def mark_unread_async(self, email_id: str) -> None:
+        """Mark an inbound email as unread (async)."""
+        await self._http.request_async("POST", f"/inbound-emails/{email_id}/mark-unread")
 
     def delete(self, email_id: str) -> None:
         """Delete an inbound email."""
@@ -121,9 +145,7 @@ class InboundEmails(BaseResource):
         body: dict[str, Any] = {"tag_ids": tag_ids}
         if note is not None:
             body["note"] = note
-        data = self._http.request(
-            "POST", f"/inbound-emails/{email_id}/tags", json=body
-        )
+        data = self._http.request("POST", f"/inbound-emails/{email_id}/tags", json=body)
         return [EmailTag.from_dict(t) for t in data]
 
     async def add_tags_async(
@@ -137,9 +159,7 @@ class InboundEmails(BaseResource):
         body: dict[str, Any] = {"tag_ids": tag_ids}
         if note is not None:
             body["note"] = note
-        data = await self._http.request_async(
-            "POST", f"/inbound-emails/{email_id}/tags", json=body
-        )
+        data = await self._http.request_async("POST", f"/inbound-emails/{email_id}/tags", json=body)
         return [EmailTag.from_dict(t) for t in data]
 
     def get_tags(self, email_id: str) -> _List[EmailTag]:
@@ -149,9 +169,7 @@ class InboundEmails(BaseResource):
 
     async def get_tags_async(self, email_id: str) -> _List[EmailTag]:
         """Get tags applied to an inbound email (async)."""
-        data = await self._http.request_async(
-            "GET", f"/inbound-emails/{email_id}/tags"
-        )
+        data = await self._http.request_async("GET", f"/inbound-emails/{email_id}/tags")
         return [EmailTag.from_dict(t) for t in data]
 
     def replace_tags(
@@ -165,9 +183,7 @@ class InboundEmails(BaseResource):
         body: dict[str, Any] = {"tag_ids": tag_ids}
         if note is not None:
             body["note"] = note
-        data = self._http.request(
-            "PUT", f"/inbound-emails/{email_id}/tags", json=body
-        )
+        data = self._http.request("PUT", f"/inbound-emails/{email_id}/tags", json=body)
         return [EmailTag.from_dict(t) for t in data]
 
     async def replace_tags_async(
@@ -181,19 +197,13 @@ class InboundEmails(BaseResource):
         body: dict[str, Any] = {"tag_ids": tag_ids}
         if note is not None:
             body["note"] = note
-        data = await self._http.request_async(
-            "PUT", f"/inbound-emails/{email_id}/tags", json=body
-        )
+        data = await self._http.request_async("PUT", f"/inbound-emails/{email_id}/tags", json=body)
         return [EmailTag.from_dict(t) for t in data]
 
     def remove_tag(self, email_id: str, tag_id: str) -> None:
         """Remove a tag from an inbound email."""
-        self._http.request(
-            "DELETE", f"/inbound-emails/{email_id}/tags/{tag_id}"
-        )
+        self._http.request("DELETE", f"/inbound-emails/{email_id}/tags/{tag_id}")
 
     async def remove_tag_async(self, email_id: str, tag_id: str) -> None:
         """Remove a tag from an inbound email (async)."""
-        await self._http.request_async(
-            "DELETE", f"/inbound-emails/{email_id}/tags/{tag_id}"
-        )
+        await self._http.request_async("DELETE", f"/inbound-emails/{email_id}/tags/{tag_id}")

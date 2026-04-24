@@ -1,6 +1,13 @@
 """Data models for the Bavimail SDK."""
 
 from .alias import Alias
+from .analytics import (
+    DeliverabilityRecent,
+    DeliverabilityRecentRow,
+    DeliverabilitySummary,
+    DeliverabilityTimeseries,
+    DeliverabilityTimeseriesPoint,
+)
 from .attachment import AttachmentFile, AttachmentUploadFile, AttachmentUploadResponse
 from .conversation import (
     ConversationDetail,
@@ -26,10 +33,10 @@ from .email import (
     TrackedLink,
 )
 from .inbound_email import (
-    InboundHeader,
     InboundAttachmentMetadata,
     InboundEmailDetail,
     InboundEmailSummary,
+    InboundHeader,
     InboundRecipient,
     Verdict,
 )
@@ -38,6 +45,7 @@ from .integration import (
     IntegrationInfo,
     RevokeApiKeyResponse,
 )
+from .suppression import Suppression
 from .tag import EmailTag, Tag, TagSummary
 from .webhook import Webhook, WebhookCreated, WebhookSecret
 
@@ -58,6 +66,11 @@ __all__ = [
     "DNSRecordWithStatus",
     "DNSVerificationProgress",
     "DNSVerificationResponse",
+    "DeliverabilityRecent",
+    "DeliverabilityRecentRow",
+    "DeliverabilitySummary",
+    "DeliverabilityTimeseries",
+    "DeliverabilityTimeseriesPoint",
     "Domain",
     "DomainSetup",
     "Email",
@@ -71,6 +84,7 @@ __all__ = [
     "IntegrationInfo",
     "MailFromStatusInfo",
     "RevokeApiKeyResponse",
+    "Suppression",
     "Tag",
     "TagSummary",
     "TrackedLink",

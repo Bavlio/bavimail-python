@@ -4,18 +4,21 @@ from __future__ import annotations
 
 import logging
 from types import TracebackType
-from typing import Any, Callable, Union
+from typing import Any, Callable
 
 import httpx
 
 from ._http import HttpClient
 from .events import EventType, WebhookEvent
-from .resources.attachments import Attachments
 from .resources.aliases import Aliases
+from .resources.analytics import Analytics
+from .resources.attachments import Attachments
 from .resources.conversations import Conversations
 from .resources.domains import Domains
 from .resources.emails import Emails
 from .resources.inbound_emails import InboundEmails
+from .resources.inbox import Inbox
+from .resources.suppressions import Suppressions
 from .resources.tags import Tags
 from .resources.webhooks import Webhooks
 
@@ -67,9 +70,12 @@ class Bavimail:
         self.domains = Domains(self._http)
         self.aliases = Aliases(self._http)
         self.attachments = Attachments(self._http)
+        self.analytics = Analytics(self._http)
         self.emails = Emails(self._http)
         self.inbound_emails = InboundEmails(self._http)
+        self.inbox = Inbox(self._http)
         self.conversations = Conversations(self._http)
+        self.suppressions = Suppressions(self._http)
         self.tags = Tags(self._http)
         self.webhooks = Webhooks(self._http)
         self._handlers: dict[EventType, _List[Callable[..., Any]]] = {}
@@ -78,7 +84,7 @@ class Bavimail:
 
     def on(
         self,
-        event_type: Union[EventType, _List[EventType]],
+        event_type: EventType | _List[EventType],
     ) -> Callable[..., Any]:
         """Register a handler for one or more event types.
 
@@ -150,8 +156,7 @@ class Bavimail:
             import uvicorn
         except ImportError:
             raise ImportError(
-                "uvicorn is required for listen(). "
-                "Install it with: pip install bavimail[listener]"
+                "uvicorn is required for listen(). Install it with: pip install bavimail[listener]"
             ) from None
 
         if not self._handlers:

@@ -109,17 +109,15 @@ class TestInboundReceivedData:
                 "alias_id": "a1",
                 "domain_id": "d1",
                 "from_email": "sender@test.com",
-                "to_email": "alias@example.com",
+                "alias": "alias@example.com",
                 "subject": "Test",
                 "attachment_count": 2,
-                "has_html": True,
-                "from_name": "Sender",
                 "body_preview": "Hello...",
                 "received_at": "2025-06-01T12:00:00Z",
             }
         )
         assert data.email_id == "e1"
-        assert data.from_name == "Sender"
+        assert data.alias == "alias@example.com"
         assert data.attachment_count == 2
         assert data.received_at == datetime(2025, 6, 1, 12, 0, 0, tzinfo=timezone.utc)
 
@@ -130,13 +128,11 @@ class TestInboundReceivedData:
                 "alias_id": "a1",
                 "domain_id": "d1",
                 "from_email": "sender@test.com",
-                "to_email": "alias@example.com",
+                "alias": "alias@example.com",
                 "subject": "Test",
                 "attachment_count": 0,
-                "has_html": False,
             }
         )
-        assert data.from_name is None
         assert data.body_preview is None
         assert data.received_at is None
 
@@ -211,7 +207,7 @@ class TestOutboundClickedData:
                 "to_email": "user@test.com",
                 "subject": "Hello",
                 "link_id": "lnk-1",
-                "original_url": "https://example.com",
+                "link_url": "https://example.com",
                 "position": 0,
                 "is_first_click": True,
                 "is_bot": False,
@@ -225,7 +221,7 @@ class TestOutboundClickedData:
             }
         )
         assert data.link_id == "lnk-1"
-        assert data.original_url == "https://example.com"
+        assert data.link_url == "https://example.com"
         assert data.anchor_text == "Click here"
         assert data.device_type == "desktop"
 

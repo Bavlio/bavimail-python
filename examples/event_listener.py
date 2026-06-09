@@ -78,4 +78,4 @@ def handle_test(event: WebhookEvent):
 # def handle_typed(event: WebhookEvent):
 #     data = InboundReceivedData.from_dict(event.data)
 #     print(f"From: {data.from_email}, Subject: {data.subject}")
-#     print(f"Attachments: {data.attachment_count}, HTML: {data.has_html}")
+#     print(f"Alias: {data.alias}, Attachments: {data.attachment_count}")

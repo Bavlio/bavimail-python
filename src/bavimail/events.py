@@ -79,27 +79,23 @@ class InboundReceivedData:
     alias_id: str
     domain_id: str
     from_email: str
-    to_email: str
+    alias: str
     subject: str
-    attachment_count: int
-    has_html: bool
-    from_name: Optional[str] = None
     body_preview: Optional[str] = None
+    attachment_count: int = 0
     received_at: Optional[datetime] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> InboundReceivedData:
         return cls(
-            email_id=data["email_id"],
-            alias_id=data["alias_id"],
-            domain_id=data["domain_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
-            attachment_count=data["attachment_count"],
-            has_html=data["has_html"],
-            from_name=data.get("from_name"),
+            email_id=data.get("email_id"),
+            alias_id=data.get("alias_id"),
+            domain_id=data.get("domain_id"),
+            from_email=data.get("from_email"),
+            alias=data.get("alias") or data.get("to_email"),
+            subject=data.get("subject"),
             body_preview=data.get("body_preview"),
+            attachment_count=data.get("attachment_count", 0),
             received_at=_parse_datetime(data.get("received_at")),
         )
 
@@ -112,18 +108,16 @@ class OutboundSentData:
     from_email: str
     to_email: str
     subject: str
-    body_preview: Optional[str] = None
     sent_at: Optional[datetime] = None
     provider_message_id: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundSentData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
-            body_preview=data.get("body_preview"),
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             sent_at=_parse_datetime(data.get("sent_at")),
             provider_message_id=data.get("provider_message_id"),
         )
@@ -142,10 +136,10 @@ class OutboundFailedData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundFailedData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             error_message=data.get("error_message"),
         )
 
@@ -167,13 +161,13 @@ class OutboundOpenedData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundOpenedData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
-            is_first_open=data["is_first_open"],
-            is_bot=data["is_bot"],
-            open_count=data["open_count"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
+            is_first_open=data.get("is_first_open"),
+            is_bot=data.get("is_bot"),
+            open_count=data.get("open_count"),
             opened_at=_parse_datetime(data.get("opened_at")),
             bot_reason=data.get("bot_reason"),
         )
@@ -188,7 +182,7 @@ class OutboundClickedData:
     to_email: str
     subject: str
     link_id: str
-    original_url: str
+    link_url: str
     position: int
     is_first_click: bool
     is_bot: bool
@@ -205,18 +199,18 @@ class OutboundClickedData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundClickedData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
-            link_id=data["link_id"],
-            original_url=data["original_url"],
-            position=data["position"],
-            is_first_click=data["is_first_click"],
-            is_bot=data["is_bot"],
-            link_click_count=data["link_click_count"],
-            link_unique_click_count=data["link_unique_click_count"],
-            email_click_count=data["email_click_count"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
+            link_id=data.get("link_id"),
+            link_url=data.get("link_url") or data.get("original_url"),
+            position=data.get("position"),
+            is_first_click=data.get("is_first_click"),
+            is_bot=data.get("is_bot"),
+            link_click_count=data.get("link_click_count"),
+            link_unique_click_count=data.get("link_unique_click_count"),
+            email_click_count=data.get("email_click_count"),
             anchor_text=data.get("anchor_text"),
             clicked_at=_parse_datetime(data.get("clicked_at")),
             bot_reason=data.get("bot_reason"),
@@ -241,10 +235,10 @@ class OutboundScheduledData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundScheduledData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             send_at=_parse_datetime(data.get("send_at")),
             send_at_timezone=data.get("send_at_timezone"),
             send_at_utc=_parse_datetime(data.get("send_at_utc")),
@@ -264,10 +258,10 @@ class OutboundCancelledData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundCancelledData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             cancelled_at=_parse_datetime(data.get("cancelled_at")),
         )
 
@@ -278,13 +272,17 @@ class DomainVerifiedData:
 
     domain_id: str
     domain: str
+    old_status: Optional[str] = None
+    new_status: Optional[str] = None
     verified_at: Optional[datetime] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> DomainVerifiedData:
         return cls(
-            domain_id=data["domain_id"],
-            domain=data["domain"],
+            domain_id=data.get("domain_id"),
+            domain=data.get("domain"),
+            old_status=data.get("old_status"),
+            new_status=data.get("new_status"),
             verified_at=_parse_datetime(data.get("verified_at")),
         )
 
@@ -295,13 +293,17 @@ class DomainFailedData:
 
     domain_id: str
     domain: str
+    old_status: Optional[str] = None
+    new_status: Optional[str] = None
     error: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> DomainFailedData:
         return cls(
-            domain_id=data["domain_id"],
-            domain=data["domain"],
+            domain_id=data.get("domain_id"),
+            domain=data.get("domain"),
+            old_status=data.get("old_status"),
+            new_status=data.get("new_status"),
             error=data.get("error"),
         )
 
@@ -316,8 +318,8 @@ class WebhookTestData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> WebhookTestData:
         return cls(
-            webhook_id=data["webhook_id"],
-            test=data["test"],
+            webhook_id=data.get("webhook_id"),
+            test=data.get("test"),
         )
 
 
@@ -330,17 +332,15 @@ class OutboundDeliveredData:
     to_email: str
     subject: str
     delivered_at: Optional[datetime] = None
-    provider_message_id: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundDeliveredData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             delivered_at=_parse_datetime(data.get("delivered_at")),
-            provider_message_id=data.get("provider_message_id"),
         )
 
 
@@ -359,10 +359,10 @@ class OutboundBouncedData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundBouncedData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             bounced_at=_parse_datetime(data.get("bounced_at")),
             bounce_type=data.get("bounce_type"),
             bounce_sub_type=data.get("bounce_sub_type"),
@@ -383,10 +383,10 @@ class OutboundComplainedData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OutboundComplainedData:
         return cls(
-            email_id=data["email_id"],
-            from_email=data["from_email"],
-            to_email=data["to_email"],
-            subject=data["subject"],
+            email_id=data.get("email_id"),
+            from_email=data.get("from_email"),
+            to_email=data.get("to_email"),
+            subject=data.get("subject"),
             complained_at=_parse_datetime(data.get("complained_at")),
             complaint_feedback_type=data.get("complaint_feedback_type"),
         )
